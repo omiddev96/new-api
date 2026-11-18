@@ -1,24 +1,35 @@
 <!doctype html>
-<html lang="en">
+<html lang="fa" dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="google" content="notranslate" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <!-- Primary Meta Tags -->
-    <title>New API</title>
-    <meta name="title" content="New API" />
+    <title>جت کلاد API</title>
+    <meta name="title" content="جت کلاد API" />
     <meta
       name="description"
-      content="Unified AI API gateway and admin dashboard."
+      content="درگاه یکپارچه API هوش مصنوعی جت کلاد و پیشخوان مدیریت."
     />
 
-    <meta name="theme-color" content="#fff" />
-    <!-- Resolve the theme before first paint so the page never flashes light
-         and one-shot detectors (e.g. Dark Reader) see the real theme.
-         Keep in sync with ThemeProvider and THEME_STORAGE_KEYS.mode. -->
+    <meta name="theme-color" content="#1d4ed8" />
+    <!-- Resolve locale direction and the theme before first paint so the page
+         never flashes LTR or the wrong color. Keep the theme half in sync with
+         ThemeProvider and THEME_STORAGE_KEYS.mode. -->
     <script>
       ;(function () {
+        var lng = 'fa'
+        try {
+          lng = localStorage.getItem('i18nextLng') || 'fa'
+        } catch (e) {}
+        var persian = lng === 'fa' || lng.indexOf('fa-') === 0
+        document.documentElement.lang = persian ? 'fa' : lng
+        document.documentElement.dir = persian ? 'rtl' : 'ltr'
+
         var theme = 'system'
         try {
           theme = localStorage.getItem('newapi:theme:v1:mode') || 'system'

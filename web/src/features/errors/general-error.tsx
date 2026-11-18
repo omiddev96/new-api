@@ -20,10 +20,11 @@ import { useNavigate, useRouter } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { JETCLOUD } from '@/brand/jetcloud'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-const FEEDBACK_URL = 'https://github.com/QuantumNous/new-api/issues'
+const FEEDBACK_URL = JETCLOUD.url
 
 type GeneralErrorProps = React.HTMLAttributes<HTMLDivElement> & {
   minimal?: boolean
@@ -89,7 +90,7 @@ export function GeneralError({
         </p>
         {!minimal && (
           <p className='text-muted-foreground text-center text-sm'>
-            {t('If this keeps happening, please report it on GitHub Issues.')}
+            {t('If this keeps happening, contact JetCloud API support.')}
           </p>
         )}
         {!minimal && (

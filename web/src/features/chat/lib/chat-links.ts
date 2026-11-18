@@ -16,6 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { JETCLOUD } from '@/brand/jetcloud'
 import { API_KEY_STATUS } from '@/features/keys/constants'
 
 export type ChatLinkType = 'web' | 'custom-protocol' | 'fluent'
@@ -192,7 +193,7 @@ export function resolveChatUrl({
 
   if (url.includes('{aqbotConfig}')) {
     const query = [
-      `name=${encodeURIComponent('New API')}`,
+      `name=${encodeURIComponent(JETCLOUD.name)}`,
       `baseurl=${encodeURIComponent(safeServerAddress)}`,
       `apikey=${encodeURIComponent(safeApiKey)}`,
       'type=openai',

@@ -28,10 +28,29 @@ import { requireServerSuccess } from '@/lib/server-error-message'
 
 import { getAboutContent } from './api'
 
+const UPSTREAM_PROJECT_URL = 'https://github.com/QuantumNous/new-api'
+
+function OpenSourceNotice() {
+  const { t } = useTranslation()
+  return (
+    <p className='text-muted-foreground/70 px-4 py-3 text-center text-xs leading-relaxed'>
+      <a
+        href={UPSTREAM_PROJECT_URL}
+        target='_blank'
+        rel='noopener noreferrer'
+        className='hover:text-foreground underline-offset-2 hover:underline'
+      >
+        {t('Based on the open-source New API project')}
+        <span dir='ltr'>
+          {' — Frontend design and development by New API contributors.'}
+        </span>
+      </a>
+    </p>
+  )
+}
+
 function EmptyAboutState() {
   const { t } = useTranslation()
-  const currentYear = new Date().getFullYear()
-
   return (
     <div className='flex min-h-[60vh] items-center justify-center p-8'>
       <div className='max-w-2xl space-y-6 text-center'>
@@ -46,68 +65,7 @@ function EmptyAboutState() {
             )}
           </p>
         </div>
-        <div className='space-y-4 text-sm'>
-          <p>
-            {t('New API Project Repository:')}{' '}
-            <a
-              href='https://github.com/QuantumNous/new-api'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='text-primary hover:underline'
-            >
-              {t('https://github.com/QuantumNous/new-api')}
-            </a>
-          </p>
-          <p className='text-muted-foreground'>
-            <a
-              href='https://github.com/QuantumNous/new-api'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='text-primary hover:underline'
-            >
-              {t('NewAPI')}
-            </a>{' '}
-            © {currentYear}{' '}
-            <a
-              href='https://github.com/QuantumNous'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='text-primary hover:underline'
-            >
-              {t('QuantumNous')}
-            </a>{' '}
-            {t('| Based on')}{' '}
-            <a
-              href='https://github.com/songquanpeng/one-api'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='text-primary hover:underline'
-            >
-              {t('One API')}
-            </a>{' '}
-            © 2023{' '}
-            <a
-              href='https://github.com/songquanpeng'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='text-primary hover:underline'
-            >
-              {t('JustSong')}
-            </a>
-          </p>
-          <p className='text-muted-foreground'>
-            {t('This project must be used in compliance with the')}{' '}
-            <a
-              href='https://github.com/QuantumNous/new-api/blob/main/LICENSE'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='text-primary hover:underline'
-            >
-              {t('AGPL v3.0 License')}
-            </a>
-            .
-          </p>
-        </div>
+        <OpenSourceNotice />
       </div>
     </div>
   )
@@ -149,12 +107,15 @@ export function About() {
   if (isUrl) {
     return (
       <PublicLayout showMainContainer={false}>
-        <iframe
-          src={rawContent}
-          className='h-[calc(100vh-3.5rem)] w-full border-0'
-          title={t('About')}
-          sandbox='allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts'
-        />
+        <div className='flex h-[calc(100vh-3.5rem)] flex-col'>
+          <iframe
+            src={rawContent}
+            className='min-h-0 w-full flex-1 border-0'
+            title={t('About')}
+            sandbox='allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts'
+          />
+          <OpenSourceNotice />
+        </div>
       </PublicLayout>
     )
   }
@@ -168,6 +129,7 @@ export function About() {
           content={rawContent}
           className='prose-neutral dark:prose-invert max-w-none'
         />
+        <OpenSourceNotice />
       </PublicLayout>
     )
   }
@@ -180,6 +142,7 @@ export function About() {
           content={rawContent}
           className='prose-neutral dark:prose-invert max-w-none'
         />
+        <OpenSourceNotice />
       </div>
     </PublicLayout>
   )

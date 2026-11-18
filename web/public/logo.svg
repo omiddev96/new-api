@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="JetCloud API">
+  <defs>
+    <linearGradient id="jetcloud-bg" x1="6" y1="2" x2="58" y2="62" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7dd3fc"/>
+      <stop offset="1" stop-color="#1d4ed8"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#jetcloud-bg)"/>
+  <g fill="#ffffff">
+    <circle cx="24" cy="40" r="8"/>
+    <circle cx="34" cy="35" r="11"/>
+    <circle cx="45" cy="40" r="7"/>
+    <rect x="18" y="38" width="34" height="11" rx="5.5"/>
+  </g>
+  <path fill="#0f2744" d="M19 32.5 46 17.2c.7-.4 1.4.5.9 1.2L38.6 31.8l-8.2-1.4z"/>
+  <path fill="#e0f2fe" d="m30.4 30.4 15.6-13.2c.7-.4 1.4.5.9 1.2L37.2 31.6z"/>
+</svg>

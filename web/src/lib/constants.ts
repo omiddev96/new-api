@@ -16,13 +16,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { JETCLOUD } from '@/brand/jetcloud'
+
 /**
  * Application-wide constants
  */
 
-// System Configuration Defaults
-export const DEFAULT_SYSTEM_NAME = 'New API'
-export const DEFAULT_LOGO = '/logo.png'
+// System Configuration Defaults. Admins can still override both in system settings.
+export const DEFAULT_SYSTEM_NAME = JETCLOUD.name
+export const DEFAULT_LOGO = JETCLOUD.logo
 
 // LocalStorage Keys
 export const STORAGE_KEYS = {

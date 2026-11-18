@@ -20,6 +20,7 @@ import { Calendar as CalendarIcon } from 'lucide-react'
 import { enUS, fr, ja, ru, vi, zhCN, zhTW } from 'react-day-picker/locale'
 import { useTranslation } from 'react-i18next'
 
+import { JalaliCalendar } from '@/components/jalali-calendar'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import {
@@ -28,6 +29,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import dayjs from '@/lib/dayjs'
+import { formatJalaliDate, isPersianLanguage } from '@/lib/jalali'
 
 const calendarLocales = {
   en: enUS,
@@ -52,8 +54,15 @@ export function DatePicker({
 }: DatePickerProps) {
   const { t, i18n } = useTranslation()
   const placeholderText = placeholder ?? t('Pick a date')
+  const persian = isPersianLanguage(i18n.language)
   const calendarLocale =
     calendarLocales[i18n.language as keyof typeof calendarLocales] ?? enUS
+  let selectedLabel = placeholderText
+  if (selected && persian) {
+    selectedLabel = formatJalaliDate(selected)
+  } else if (selected) {
+    selectedLabel = dayjs(selected).format('YYYY-MM-DD')
+  }
   return (
     <Popover>
       <PopoverTrigger
@@ -65,24 +74,30 @@ export function DatePicker({
           />
         }
       >
-        {selected ? (
-          dayjs(selected).format('YYYY-MM-DD')
-        ) : (
-          <span>{placeholderText}</span>
-        )}
+        {selected ? selectedLabel : <span>{placeholderText}</span>}
         <CalendarIcon className='ms-auto h-4 w-4 opacity-50' />
       </PopoverTrigger>
       <PopoverContent className='w-auto p-0'>
-        <Calendar
-          mode='single'
-          captionLayout='dropdown'
-          selected={selected}
-          onSelect={onSelect}
-          locale={calendarLocale}
-          disabled={(date: Date) =>
-            date > new Date() || date < new Date('1900-01-01')
-          }
-        />
+        {persian ? (
+          <JalaliCalendar
+            selected={selected}
+            onSelect={(date) => onSelect(date)}
+            disabled={(date: Date) =>
+              date > new Date() || date < new Date('1900-01-01')
+            }
+          />
+        ) : (
+          <Calendar
+            mode='single'
+            captionLayout='dropdown'
+            selected={selected}
+            onSelect={onSelect}
+            locale={calendarLocale}
+            disabled={(date: Date) =>
+              date > new Date() || date < new Date('1900-01-01')
+            }
+          />
+        )}
       </PopoverContent>
     </Popover>
   )

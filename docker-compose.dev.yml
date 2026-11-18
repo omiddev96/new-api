@@ -35,7 +35,7 @@ services:
       - SESSION_COOKIE_SECURE=false
       # For HTTPS only: set Secure=true and list every exact trusted HTTPS browser Origin. This does not configure relay CORS.
       # - SESSION_COOKIE_SECURE=true
-      # - SESSION_COOKIE_TRUSTED_URL=https://example.com,https://admin.example.com
+      # - SESSION_COOKIE_TRUSTED_URL=https://jetcloudapi.com
     depends_on:
       redis:
         condition: service_started

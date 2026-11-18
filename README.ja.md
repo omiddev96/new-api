@@ -222,7 +222,7 @@ docker compose logs -f new-api
 | `SESSION_SECRET` | 永続的な認証用シークレット。全ノードで同じ値を使用 |
 | `CRYPTO_SECRET` | 既定は `SESSION_SECRET`。Redis を共有するノードは同じ実効値を使用 |
 | `SESSION_COOKIE_SECURE` | HTTPS の管理画面では `true`。Secure な更新用 Cookie と、更新・ログアウト時の厳格なオリジン検証を有効化 |
-| `SESSION_COOKIE_TRUSTED_URL` | Secure モードでは必須。パスやワイルドカードを含まない正確な HTTPS オリジンをカンマ区切りで指定。ローカル HTTP では未設定にする |
+| `SESSION_COOKIE_TRUSTED_URL` | Secure モードでは必須。パスやワイルドカードを含まない正確な HTTPS オリジンをカンマ区切りで指定（例: `https://jetcloudapi.com`）。ローカル HTTP では未設定にする |
 | `TRUSTED_PROXIES` | 信頼するリバースプロキシの IP/CIDR、または `none`。実際のネットワークに合わせて明示的に設定 |
 
 詳細は[環境変数の例](./.env.example)、[環境変数リファレンス](https://docs.newapi.ai/ja/docs/installation/config-maintenance/environment-variables)、[認証とセッションの説明](./docs/authentication.md)を参照してください。コンテナの変数は Compose の `environment` または `env_file` で渡します。`.env.example` のコピーだけではコンテナに反映されません。

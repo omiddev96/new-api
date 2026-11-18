@@ -222,7 +222,7 @@ docker compose logs -f new-api
 | `SESSION_SECRET` | Secret d'authentification persistant, identique sur tous les nœuds |
 | `CRYPTO_SECRET` | Vaut `SESSION_SECRET` par défaut ; même valeur effective pour les nœuds partageant Redis |
 | `SESSION_COOKIE_SECURE` | `true` pour une console HTTPS ; active les cookies de renouvellement Secure et les contrôles stricts d'origine du renouvellement et de la déconnexion |
-| `SESSION_COOKIE_TRUSTED_URL` | Obligatoire en mode Secure : origines HTTPS exactes séparées par des virgules, sans chemin ni joker ; à laisser non définie en HTTP local |
+| `SESSION_COOKIE_TRUSTED_URL` | Obligatoire en mode Secure : origines HTTPS exactes séparées par des virgules, sans chemin ni joker, par exemple `https://jetcloudapi.com` ; à laisser non définie en HTTP local |
 | `TRUSTED_PROXIES` | IP/CIDR des proxys de confiance, ou `none` ; à configurer selon votre réseau |
 
 Consultez l'[exemple d'environnement](./.env.example), la [référence des variables](https://docs.newapi.ai/en/docs/installation/config-maintenance/environment-variables) et le [guide des sessions](./docs/authentication.md). Injectez les variables du conteneur avec `environment` ou `env_file` dans Compose ; copier `.env.example` ne suffit pas.

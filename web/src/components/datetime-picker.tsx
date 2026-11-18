@@ -21,6 +21,7 @@ import * as React from 'react'
 import { enUS, fr, ja, ru, vi, zhCN, zhTW } from 'react-day-picker/locale'
 import { useTranslation } from 'react-i18next'
 
+import { JalaliCalendar } from '@/components/jalali-calendar'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Input } from '@/components/ui/input'
@@ -30,6 +31,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import dayjs from '@/lib/dayjs'
+import { formatJalaliDate, isPersianLanguage } from '@/lib/jalali'
 import { cn } from '@/lib/utils'
 
 const calendarLocales = {
@@ -57,6 +59,7 @@ export function DateTimePicker({
 }: DateTimePickerProps) {
   const { t, i18n } = useTranslation()
   const placeholderText = placeholder ?? t('Select date')
+  const persian = isPersianLanguage(i18n.language)
   const calendarLocale =
     calendarLocales[i18n.language as keyof typeof calendarLocales] ?? enUS
   const currentYear = new Date().getFullYear()
@@ -64,6 +67,12 @@ export function DateTimePicker({
   const [date, setDate] = React.useState<Date | undefined>(value)
   const [month, setMonth] = React.useState<Date | undefined>(value)
   const [time, setTime] = React.useState<string>('00:00:00')
+  let dateLabel = placeholderText
+  if (date && persian) {
+    dateLabel = formatJalaliDate(date)
+  } else if (date) {
+    dateLabel = dayjs(date).format('YYYY-MM-DD')
+  }
 
   React.useEffect(() => {
     setDate(value)
@@ -127,21 +136,28 @@ export function DateTimePicker({
             />
           }
         >
-          {date ? dayjs(date).format('YYYY-MM-DD') : placeholderText}
+          {date ? dateLabel : placeholderText}
           <ChevronDownIcon className='h-4 w-4 opacity-50' />
         </PopoverTrigger>
         <PopoverContent className='w-auto overflow-hidden p-0' align='start'>
-          <Calendar
-            mode='single'
-            selected={date}
-            month={month}
-            onMonthChange={setMonth}
-            captionLayout='dropdown'
-            onSelect={handleDateSelect}
-            locale={calendarLocale}
-            startMonth={new Date(currentYear - 100, 0)}
-            endMonth={new Date(currentYear + 100, 11)}
-          />
+          {persian ? (
+            <JalaliCalendar
+              selected={date}
+              onSelect={(next) => handleDateSelect(next)}
+            />
+          ) : (
+            <Calendar
+              mode='single'
+              selected={date}
+              month={month}
+              onMonthChange={setMonth}
+              captionLayout='dropdown'
+              onSelect={handleDateSelect}
+              locale={calendarLocale}
+              startMonth={new Date(currentYear - 100, 0)}
+              endMonth={new Date(currentYear + 100, 11)}
+            />
+          )}
         </PopoverContent>
       </Popover>
       <Input

@@ -26,6 +26,7 @@ For commercial licensing, please contact support@quantumnous.com
  * that activates it. Loaded globally so font-switching is instantaneous
  * with no FOUT once the variable is fetched. */
 @import '@fontsource-variable/lora';
+@import '@fontsource-variable/vazirmatn';
 
 @import './theme.css';
 @import './theme-presets.css';
@@ -108,6 +109,10 @@ For commercial licensing, please contact support@quantumnous.com
   }
   html {
     @apply overflow-x-hidden font-sans;
+  }
+  html[dir='rtl'] {
+    --font-ui-sans: 'Vazirmatn Variable', Vazirmatn, sans-serif;
+    --font-body: 'Vazirmatn Variable', Vazirmatn, sans-serif;
   }
   body {
     @apply bg-background text-foreground has-[div[data-variant='inset']]:bg-sidebar min-h-svh w-full;
@@ -744,4 +749,42 @@ For commercial licensing, please contact support@quantumnous.com
   .auto-group-flow-border {
     display: none;
   }
+}
+
+/* Physical utilities in the existing console follow the writing direction. */
+[dir='rtl'] .text-left {
+  text-align: right;
+}
+[dir='rtl'] .text-right {
+  text-align: left;
+}
+[dir='rtl'] .ml-auto {
+  margin-left: 0;
+  margin-right: auto;
+}
+[dir='rtl'] .mr-auto {
+  margin-right: 0;
+  margin-left: auto;
+}
+[dir='rtl'] .lucide-chevron-left,
+[dir='rtl'] .lucide-chevron-right,
+[dir='rtl'] .lucide-chevrons-left,
+[dir='rtl'] .lucide-chevrons-right,
+[dir='rtl'] .lucide-arrow-left,
+[dir='rtl'] .lucide-arrow-right {
+  transform: scaleX(-1);
+}
+[dir='rtl'] pre,
+[dir='rtl'] code,
+[dir='rtl'] kbd,
+[dir='rtl'] .cm-editor,
+[dir='rtl'] .shiki,
+[dir='rtl'] input[type='email'],
+[dir='rtl'] input[type='url'],
+[dir='rtl'] input[type='password'],
+[dir='rtl'] input[type='time'],
+[dir='rtl'] [data-chart],
+[dir='rtl'] .vchart {
+  direction: ltr;
+  text-align: left;
 }

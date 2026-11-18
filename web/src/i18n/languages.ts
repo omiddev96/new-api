@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 export const INTERFACE_LANGUAGE_OPTIONS = [
+  { code: 'fa', label: 'فارسی' },
   { code: 'zhCN', label: '简体中文' },
   { code: 'en', label: 'English' },
   { code: 'fr', label: 'Français' },
@@ -30,9 +31,12 @@ export type InterfaceLanguageCode =
   (typeof INTERFACE_LANGUAGE_OPTIONS)[number]['code']
 
 export function normalizeInterfaceLanguage(value?: string | null): string {
-  if (!value) return 'en'
+  if (!value) return 'fa'
 
   let normalized = value.trim().replaceAll('_', '-').toLowerCase()
+  if (normalized === 'fa' || normalized.startsWith('fa-')) {
+    normalized = 'fa'
+  }
   if (
     value === 'zh-TW' ||
     value === 'zh-HK' ||
@@ -47,7 +51,12 @@ export function normalizeInterfaceLanguage(value?: string | null): string {
 
   return INTERFACE_LANGUAGE_OPTIONS.some((lang) => lang.code === normalized)
     ? normalized
-    : 'en'
+    : 'fa'
+}
+
+/** Persian uses the right-to-left writing mode. Every other interface language stays left-to-right. */
+export function directionForLanguage(value?: string | null): 'ltr' | 'rtl' {
+  return normalizeInterfaceLanguage(value) === 'fa' ? 'rtl' : 'ltr'
 }
 
 /**
@@ -62,6 +71,7 @@ export function normalizeInterfaceLanguage(value?: string | null): string {
  */
 export function convertDetectedLanguage(value: string): string {
   const lower = value.trim().replaceAll('_', '-').toLowerCase()
+  if (lower === 'fa' || lower.startsWith('fa-')) return 'fa'
   if (!lower.startsWith('zh')) return value
   if (
     lower === 'zhtw' ||
