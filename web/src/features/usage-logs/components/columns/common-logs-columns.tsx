@@ -45,10 +45,11 @@ import {
   getTaskUsagePriceUnitLabelKey,
 } from '@/features/pricing/lib/dynamic-price'
 import { pluginUsageSchema } from '@/features/pricing/lib/plugin-pricing'
+import { perTokenPriceSuffix } from '@/features/pricing/lib/price'
 import { taskUsageUnitLabel } from '@/features/pricing/lib/task-price-display'
 import type { BillingUsageSchema } from '@/features/pricing/types'
 import { getUserAvatarFallback, getUserAvatarStyle } from '@/lib/avatar'
-import { formatBillingCurrencyFromUSD } from '@/lib/currency'
+import { formatBillingCurrencyFromUSD, isTomanDisplay } from '@/lib/currency'
 import { formatLogQuota, formatTimestampToDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { useSystemConfigStore } from '@/stores/system-config-store'
@@ -172,13 +173,16 @@ function buildTypeDetailSegments(
   const segments: DetailSegment[] = []
 
   const priceOpts = { digitsLarge: 4, digitsSmall: 6, abbreviate: false }
+  const toman = isTomanDisplay()
+  const perMillion = toman ? ` ${perTokenPriceSuffix('M', t)}` : '/M'
+  const tokenUsd = (price: number) => (toman ? price / 1000 : price)
   const formatPrice = (price: number) =>
-    `${formatBillingCurrencyFromUSD(price, priceOpts)}/M`
+    `${formatBillingCurrencyFromUSD(tokenUsd(price), priceOpts)}${perMillion}`
   const formatPriceCompact = (price: number) =>
-    formatBillingCurrencyFromUSD(price, priceOpts)
+    formatBillingCurrencyFromUSD(tokenUsd(price), priceOpts)
   const formatPriceList = (prices: string[], showUnit: boolean) => {
     const text = prices.join(' / ')
-    return showUnit ? `${text}/M` : text
+    return showUnit ? `${text}${perMillion}` : text
   }
   const isTieredExpr = other.billing_mode === 'tiered_expr'
   const tieredSummary = getTieredBillingSummary(other, log.model_name)

@@ -16,7 +16,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { formatBillingCurrencyFromUSD } from '@/lib/currency'
+import {
+  formatBillingCurrencyFromUSD,
+  isTomanDisplay,
+} from '@/lib/currency'
 
 import { QUOTA_TYPE_VALUES, TOKEN_UNIT_DIVISORS } from '../constants'
 import type { PricingModel, TokenUnit, PriceType } from '../types'
@@ -141,6 +144,37 @@ function applyRechargeRate(
 /**
  * Format token-based price for display
  */
+
+/** `1M` / `1K`. Toman prices are always quoted per thousand tokens. */
+export function pricingTokenUnitMark(unit: TokenUnit): string {
+  if (isTomanDisplay()) return 'هزار'
+  return unit === 'K' ? '1K' : '1M'
+}
+
+function displayTokenUnit(unit: TokenUnit): TokenUnit {
+  return isTomanDisplay() ? 'K' : unit
+}
+
+export function perTokenPriceSuffix(
+  unit: TokenUnit,
+  translate: (key: string, values?: Record<string, unknown>) => string
+): string {
+  if (!isTomanDisplay()) return `/ ${pricingTokenUnitMark(unit)}`
+  return `/ ${translate('per thousand tokens')}`
+}
+
+/** Keep a task unit as-is. A token unit becomes `/ هزار توکن` for toman. */
+export function shownUnitSuffix(
+  unitLabel: string,
+  unit: TokenUnit,
+  translate: (key: string, values?: Record<string, unknown>) => string
+): string {
+  if (isTomanDisplay() && unitLabel === pricingTokenUnitMark(unit)) {
+    return perTokenPriceSuffix(unit, translate)
+  }
+  return `/ ${unitLabel}`
+}
+
 export function formatPrice(
   model: PricingModel,
   type: PriceType,
@@ -165,7 +199,7 @@ export function formatPrice(
     usdExchangeRate
   )
 
-  const price = priceInUSD / TOKEN_UNIT_DIVISORS[tokenUnit]
+  const price = priceInUSD / TOKEN_UNIT_DIVISORS[displayTokenUnit(tokenUnit)]
   return formatBillingCurrencyFromUSD(price, {
     showSymbol: showCurrencySymbol,
     digitsLarge: 4,
@@ -201,7 +235,7 @@ export function formatGroupPrice(
     usdExchangeRate
   )
 
-  const price = priceInUSD / TOKEN_UNIT_DIVISORS[tokenUnit]
+  const price = priceInUSD / TOKEN_UNIT_DIVISORS[displayTokenUnit(tokenUnit)]
   return formatBillingCurrencyFromUSD(price, {
     digitsLarge: 4,
     digitsSmall: 6,

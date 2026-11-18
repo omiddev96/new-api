@@ -19,6 +19,7 @@ For commercial licensing, please contact support@quantumnous.com
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { MoneyFigure } from '@/components/money-figure'
 import { useSystemConfigStore } from '@/stores/system-config-store'
 
 import { DEFAULT_TOKEN_UNIT } from '../constants'
@@ -30,7 +31,12 @@ import {
 } from '../lib/dynamic-price'
 import { isTokenBasedModel } from '../lib/model-helpers'
 import { withBasePricing } from '../lib/plugin-pricing'
-import { formatPrice, stripTrailingZeros } from '../lib/price'
+import {
+  formatPrice,
+  pricingTokenUnitMark,
+  shownUnitSuffix,
+  stripTrailingZeros,
+} from '../lib/price'
 import type { PricingModel } from '../types'
 import type { ModelPriceCellOptions } from './model-price-cell'
 
@@ -47,7 +53,7 @@ export function CachedPriceCell(props: {
     selectedGroup,
   } = props.options
 
-  const tokenUnitLabel = tokenUnit === 'K' ? '1K' : '1M'
+  const tokenUnitLabel = pricingTokenUnitMark(tokenUnit)
 
   const model = useMemo(() => withBasePricing(props.model), [props.model])
   const currency = useSystemConfigStore((state) => state.config.currency)
@@ -108,12 +114,12 @@ export function CachedPriceCell(props: {
               </span>
             )}
             <span className='font-mono text-sm tabular-nums'>
-              {stripTrailingZeros(entry.formatted)}
+              <MoneyFigure amount={stripTrailingZeros(entry.formatted)} />
             </span>
           </div>
         ))}
         <div className='text-muted-foreground/50 text-[10px]'>
-          / {tokenUnitLabel}
+          {shownUnitSuffix(tokenUnitLabel, tokenUnit, t)}
         </div>
       </div>
     )
@@ -143,9 +149,11 @@ export function CachedPriceCell(props: {
 
   return (
     <div className='max-w-full min-w-0'>
-      <span className='font-mono text-sm tabular-nums'>{cachedPrice}</span>
+      <span className='font-mono text-sm tabular-nums'>
+        <MoneyFigure amount={cachedPrice} />
+      </span>
       <div className='text-muted-foreground/50 text-[10px]'>
-        / {tokenUnitLabel}
+        {shownUnitSuffix(tokenUnitLabel, tokenUnit, t)}
       </div>
     </div>
   )

@@ -18,6 +18,8 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import type { TFunction } from 'i18next'
 
+import { formatLocalCurrencyAmount, isTomanDisplay } from '@/lib/currency'
+
 import { DEFAULT_DISCOUNT_RATE } from '../constants'
 
 // ============================================================================
@@ -56,6 +58,9 @@ export function formatCurrency(amount: number | string): string {
   const numeric =
     typeof amount === 'number' ? amount : Number.parseFloat(String(amount))
   if (!Number.isFinite(numeric)) return '-'
+  if (isTomanDisplay()) {
+    return formatLocalCurrencyAmount(numeric, { abbreviate: false })
+  }
 
   return new Intl.NumberFormat(undefined, {
     minimumFractionDigits: 0,

@@ -118,6 +118,11 @@ export function useSidebarData(badges: SidebarBadges = {}): SidebarData {
             icon: Wallet,
           },
           {
+            title: t('AI accounts'),
+            url: '/account-shop',
+            icon: Wallet,
+          },
+          {
             title: t('Profile'),
             url: '/profile',
             icon: User,

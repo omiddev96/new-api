@@ -17,19 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { Link } from '@tanstack/react-router'
-import {
-  Bot,
-  Code2,
-  Image as ImageIcon,
-  KeyRound,
-  ShieldCheck,
-  Sparkles,
-  Wallet,
-  Workflow,
-  Zap,
-} from 'lucide-react'
 import { useReducedMotion } from 'motion/react'
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { JETCLOUD } from '@/brand/jetcloud'
@@ -40,12 +29,13 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
-import { usePricingData } from '@/features/pricing/hooks/use-pricing-data'
-import { formatPrice } from '@/features/pricing/lib/price'
 import { getLobeIcon } from '@/lib/lobe-icon'
 import { cn } from '@/lib/utils'
 
 import { JetMark } from './jet-mark'
+import { SanctionMascot } from './mascot'
+import { PriceComparison } from './price-bars'
+import { ShopTeaser } from './shop-teaser'
 import './landing.css'
 
 const PROVIDERS = [
@@ -97,11 +87,10 @@ export function Landing(props: LandingProps) {
       <div className='jet-noise' aria-hidden='true' />
       <Hero primaryHref={primaryHref} primaryLabel={primaryLabel} />
       <Marquee />
+      <SanctionMascot />
+      <PriceComparison />
       <Demo />
-      <Bento />
-      <UseCases />
-      <PricingTeaser />
-      <Steps />
+      <ShopTeaser />
       <Faq />
       <FinalCta primaryHref={primaryHref} primaryLabel={primaryLabel} />
       <LandingFooter />
@@ -274,186 +263,6 @@ function Demo() {
   -d '{"model":"${model.model}","messages":[{"role":"user","content":"..."}]}'`}
         </code>
       </pre>
-    </section>
-  )
-}
-
-const BENTO = [
-  {
-    icon: KeyRound,
-    title: 'One key, every model',
-    body: 'Send chat, code, and images through the same key. Swap the model name and keep your app.',
-  },
-  {
-    icon: Wallet,
-    title: 'Pay in rial',
-    body: 'Top up in rial with local payment. No foreign card and no extra hop just to pay.',
-  },
-  {
-    icon: Sparkles,
-    title: 'Works with your tools',
-    body: 'OpenAI-compatible routes. Point an existing client at JetCloud and change the base URL.',
-  },
-  {
-    icon: ShieldCheck,
-    title: 'See every rial',
-    body: 'A live usage dashboard shows which model, key, and user spent what.',
-  },
-  {
-    icon: Zap,
-    title: 'Stays up',
-    body: 'Requests fail over to the next healthy channel when one provider slows down.',
-  },
-  {
-    icon: Workflow,
-    title: 'Teams with limits',
-    body: 'Give each teammate a key, a budget, and a rate limit.',
-  },
-] as const
-
-function Bento() {
-  const { t } = useTranslation()
-  return (
-    <section className='mx-auto max-w-6xl px-5 py-8 md:px-8'>
-      <h2 className='text-3xl font-bold'>{t('Built around one key')}</h2>
-      <div className='mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
-        {BENTO.map((item) => (
-          <BentoCard key={item.title} title={t(item.title)} body={t(item.body)}>
-            <item.icon className='size-5 text-[#8b5cf6]' aria-hidden='true' />
-          </BentoCard>
-        ))}
-      </div>
-    </section>
-  )
-}
-
-function BentoCard(props: {
-  title: string
-  body: string
-  children: ReactNode
-}) {
-  return (
-    <article
-      className='jet-glass group relative overflow-hidden rounded-3xl p-5'
-      onMouseMove={(event) => {
-        const rect = event.currentTarget.getBoundingClientRect()
-        event.currentTarget.style.setProperty(
-          '--mx',
-          `${event.clientX - rect.left}px`
-        )
-        event.currentTarget.style.setProperty(
-          '--my',
-          `${event.clientY - rect.top}px`
-        )
-      }}
-    >
-      <div
-        aria-hidden='true'
-        className='pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100'
-        style={{
-          background:
-            'radial-gradient(18rem circle at var(--mx) var(--my), rgb(139 92 246 / 22%), transparent 60%)',
-        }}
-      />
-      <div className='relative'>
-        {props.children}
-        <h3 className='mt-4 text-lg font-semibold'>{props.title}</h3>
-        <p className='text-muted-foreground mt-2 text-sm leading-7'>{props.body}</p>
-      </div>
-    </article>
-  )
-}
-
-const CASES = [
-  { icon: Bot, title: 'Chatbots', body: 'Answer customers without wiring a new provider for every model.' },
-  { icon: Sparkles, title: 'Content', body: 'Draft, rewrite, and translate with the model that fits the tone.' },
-  { icon: Code2, title: 'Coding', body: 'Point your editor at one endpoint and pick the coding model per task.' },
-  { icon: ImageIcon, title: 'Images', body: 'Generate images from the same key you already use for chat.' },
-  { icon: Workflow, title: 'Automation', body: 'Call several models from one workflow and one bill.' },
-] as const
-
-function UseCases() {
-  const { t } = useTranslation()
-  return (
-    <section className='mx-auto max-w-6xl px-5 py-16 md:px-8'>
-      <h2 className='text-3xl font-bold'>{t('Where teams use it')}</h2>
-      <div className='mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5'>
-        {CASES.map((item) => (
-          <article key={item.title} className='jet-glass rounded-3xl p-4'>
-            <item.icon className='size-5 text-[#ec4899]' aria-hidden='true' />
-            <h3 className='mt-3 font-semibold'>{t(item.title)}</h3>
-            <p className='text-muted-foreground mt-2 text-sm leading-7'>{t(item.body)}</p>
-          </article>
-        ))}
-      </div>
-    </section>
-  )
-}
-
-function PricingTeaser() {
-  const { t } = useTranslation()
-  const { models } = usePricingData()
-  const preview = models.slice(0, 4)
-  return (
-    <section className='mx-auto max-w-6xl px-5 py-8 md:px-8'>
-      <div className='jet-glass rounded-[2rem] p-6 md:p-8'>
-        <div className='flex flex-wrap items-end justify-between gap-4'>
-          <div>
-            <h2 className='text-3xl font-bold'>{t('Models and prices')}</h2>
-            <p className='text-muted-foreground mt-2 max-w-xl leading-7'>
-              {t('Live prices from the public catalog, when models are published.')}
-            </p>
-          </div>
-          <Button variant='outline' className='rounded-full' render={<Link to='/pricing' />}>
-            {t('Models and prices')}
-          </Button>
-        </div>
-        {preview.length > 0 ? (
-          <ul className='mt-6 grid gap-3 sm:grid-cols-2'>
-            {preview.map((model) => (
-              <li
-                key={model.model_name}
-                className='flex items-center justify-between rounded-2xl border border-white/40 px-4 py-3 dark:border-white/10'
-              >
-                <span className='font-medium'>{model.model_name}</span>
-                <span className='text-sm' dir='ltr'>
-                  {formatPrice(model, 'input', 'M', false, 1, 1)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className='text-muted-foreground mt-6 text-sm'>
-            {t('Prices appear here as soon as models are available.')}
-          </p>
-        )}
-      </div>
-    </section>
-  )
-}
-
-const STEPS = [
-  { title: 'Create a key', body: 'Make one API key in the console.' },
-  { title: 'Call a model', body: 'Use the OpenAI-compatible endpoint and set the model name.' },
-  { title: 'Watch the cost', body: 'Usage and rial spend show up as the requests land.' },
-] as const
-
-function Steps() {
-  const { t } = useTranslation()
-  return (
-    <section className='mx-auto max-w-6xl px-5 py-16 md:px-8'>
-      <h2 className='text-3xl font-bold'>{t('How it starts')}</h2>
-      <ol className='mt-8 grid gap-4 md:grid-cols-3'>
-        {STEPS.map((step, index) => (
-          <li key={step.title} className='jet-glass rounded-3xl p-5'>
-            <span className='text-sm font-semibold text-[#8b5cf6]'>
-              {index + 1}
-            </span>
-            <h3 className='mt-3 text-lg font-semibold'>{t(step.title)}</h3>
-            <p className='text-muted-foreground mt-2 text-sm leading-7'>{t(step.body)}</p>
-          </li>
-        ))}
-      </ol>
     </section>
   )
 }

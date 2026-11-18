@@ -34,6 +34,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { CopyButton } from '@/components/copy-button'
+import { MoneyFigure } from '@/components/money-figure'
 import { StaticDataTable } from '@/components/data-table'
 import { sideDrawerContentClassName } from '@/components/drawer-layout'
 import { GroupBadge } from '@/components/group-badge'
@@ -85,7 +86,12 @@ import {
   withOrdinaryPricing,
   withPluginPricing,
 } from '../lib/plugin-pricing'
-import { formatFixedPrice, formatGroupPrice } from '../lib/price'
+import {
+  formatFixedPrice,
+  formatGroupPrice,
+  pricingTokenUnitMark,
+  shownUnitSuffix,
+} from '../lib/price'
 import {
   evaluateTaskUsageExamples,
   getTaskEnumFields,
@@ -651,7 +657,7 @@ function PriceSection(props: {
 }) {
   const { t, i18n } = useTranslation()
   const isTokenBased = isTokenBasedModel(props.model)
-  const tokenUnitLabel = props.tokenUnit === 'K' ? '1K' : '1M'
+  const tokenUnitLabel = pricingTokenUnitMark(props.tokenUnit)
   const baseGroupKey = '_base'
   const baseGroupRatioMap = { [baseGroupKey]: 1 }
   const currency = useSystemConfigStore((state) => state.config.currency)
@@ -785,9 +791,9 @@ function PriceSection(props: {
                     <DynamicPriceEntryLabel entry={entry} />
                   </div>
                   <div className='text-foreground mt-1 font-mono text-base font-semibold tabular-nums'>
-                    {entry.formattedRange ?? entry.formatted}
-                    <span className='text-muted-foreground/40 ml-1 text-xs font-normal'>
-                      / {unitLabel}
+                    <MoneyFigure amount={entry.formattedRange ?? entry.formatted} />
+                    <span className='text-muted-foreground/70 ml-1 text-[0.72em] font-normal'>
+                      {shownUnitSuffix(unitLabel, props.tokenUnit, t)}
                     </span>
                   </div>
                 </div>
@@ -820,9 +826,9 @@ function PriceSection(props: {
                       <DynamicPriceEntryLabel entry={entry} />
                     </span>
                     <span className='text-muted-foreground font-mono text-sm tabular-nums'>
-                      {entry.formattedRange ?? entry.formatted}
-                      <span className='text-muted-foreground/40 ml-1 text-xs font-normal'>
-                        / {unitLabel}
+                      <MoneyFigure amount={entry.formattedRange ?? entry.formatted} />
+                      <span className='text-muted-foreground/70 ml-1 text-[0.72em] font-normal'>
+                        {shownUnitSuffix(unitLabel, props.tokenUnit, t)}
                       </span>
                     </span>
                   </div>
@@ -870,18 +876,20 @@ function PriceSection(props: {
   const secondaryItems = secondaryPriceTypes.filter((p) => p.available)
   const renderPrice = (type: PriceType) => (
     <>
-      {formatGroupPrice(
-        props.model,
-        baseGroupKey,
-        type,
-        props.tokenUnit,
-        props.showRechargePrice,
-        props.priceRate,
-        props.usdExchangeRate,
-        baseGroupRatioMap
-      )}
-      <span className='text-muted-foreground/40 ml-1 text-xs font-normal'>
-        / {tokenUnitLabel}
+      <MoneyFigure
+        amount={formatGroupPrice(
+          props.model,
+          baseGroupKey,
+          type,
+          props.tokenUnit,
+          props.showRechargePrice,
+          props.priceRate,
+          props.usdExchangeRate,
+          baseGroupRatioMap
+        )}
+      />
+      <span className='text-muted-foreground/70 ml-1 text-[0.72em] font-normal'>
+        {shownUnitSuffix(tokenUnitLabel, props.tokenUnit, t)}
       </span>
     </>
   )
@@ -1098,7 +1106,7 @@ function ProviderGroupPricingSection(
   )
 
   const isTokenBased = isTokenBasedModel(props.model)
-  const tokenUnitLabel = props.tokenUnit === 'K' ? '1K' : '1M'
+  const tokenUnitLabel = pricingTokenUnitMark(props.tokenUnit)
 
   const extraPriceTypes = useMemo(() => {
     const types: { label: string; type: PriceType }[] = []

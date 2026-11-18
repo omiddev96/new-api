@@ -84,12 +84,16 @@ export function Wallet(props: WalletProps) {
   const { currency } = useSystemConfig()
   const { topupInfo, presetAmounts, loading: topupLoading } = useTopupInfo()
 
-  // Calculate effective exchange rate - when display type is USD, use rate of 1
+  // USD display stays at 1. Custom currency, including toman, uses its own rate.
   const effectiveUsdExchangeRate = useMemo(() => {
-    return currency?.quotaDisplayType === 'USD'
-      ? 1
-      : currency?.usdExchangeRate || 1
-  }, [currency?.quotaDisplayType, currency?.usdExchangeRate])
+    if (!currency || currency.quotaDisplayType === 'USD') return 1
+    if (currency.quotaDisplayType === 'CUSTOM') {
+      return currency.customCurrencyExchangeRate > 0
+        ? currency.customCurrencyExchangeRate
+        : 1
+    }
+    return currency.usdExchangeRate || 1
+  }, [currency])
   const {
     amount: paymentAmount,
     calculating,

@@ -19,7 +19,8 @@ For commercial licensing, please contact support@quantumnous.com
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { getCurrencyLabel } from '@/lib/currency'
+import { MoneyFigure } from '@/components/money-figure'
+import { getCurrencyLabel, isTomanDisplay } from '@/lib/currency'
 import { useSystemConfigStore } from '@/stores/system-config-store'
 
 import { DEFAULT_TOKEN_UNIT } from '../constants'
@@ -32,7 +33,12 @@ import {
 } from '../lib/dynamic-price'
 import { isTokenBasedModel } from '../lib/model-helpers'
 import { withBasePricing } from '../lib/plugin-pricing'
-import { formatPrice, formatRequestPrice } from '../lib/price'
+import {
+  formatPrice,
+  formatRequestPrice,
+  perTokenPriceSuffix,
+  pricingTokenUnitMark,
+} from '../lib/price'
 import { taskUsageUnitLabel } from '../lib/task-price-display'
 import type { PricingModel, TokenUnit } from '../types'
 
@@ -56,7 +62,8 @@ export function ModelPriceCell(props: {
     currency.quotaDisplayType === 'TOKENS' ? 'USD' : getCurrencyLabel()
   const options = props.options ?? {}
   const tokenUnit = options.tokenUnit ?? DEFAULT_TOKEN_UNIT
-  const tokenUnitLabel = tokenUnit === 'K' ? '1K' : '1M'
+  const tokenUnitLabel = pricingTokenUnitMark(tokenUnit)
+  const toman = isTomanDisplay()
   const billingTime = useBillingTime(model.billing_expr)
   const dynamic = useMemo(
     () =>
@@ -85,17 +92,19 @@ export function ModelPriceCell(props: {
       currency,
     ]
   )
-  let metrics: Array<{ label: string; value: string }>
+  let metrics: Array<{ label: string; value: string; unit?: string }>
   const providerCaption = dynamic?.providerCount
     ? t('{{count}} providers', { count: dynamic.providerCount })
     : ''
   const unconfiguredCaption = dynamic?.hasUnconfiguredProviders
     ? t('Not configured for some providers')
     : ''
-  let caption = t('{{currency}} / {{unit}} tokens', {
-    currency: currencyLabel,
-    unit: tokenUnitLabel,
-  })
+  let caption = toman
+    ? perTokenPriceSuffix(tokenUnit, t)
+    : t('{{currency}} / {{unit}} tokens', {
+        currency: currencyLabel,
+        unit: tokenUnitLabel,
+      })
 
   if (dynamic) {
     if (dynamic.isSpecialExpression) {
@@ -132,7 +141,9 @@ export function ModelPriceCell(props: {
           unit ? t(unit) : ''
         )
         let suffix = unitLabel ? `/${unitLabel}` : ''
-        if (hasRequestPrice && entry.unit === 'token') {
+        if (toman && entry.unit === 'token') {
+          suffix = ` / ${t('per thousand tokens')}`
+        } else if (hasRequestPrice && entry.unit === 'token') {
           suffix = `/${t('{{unit}} tokens', { unit: tokenUnitLabel })}`
         }
         return {
@@ -189,6 +200,7 @@ export function ModelPriceCell(props: {
       metrics = [
         {
           label: t('Input'),
+          unit: toman ? t('per thousand tokens') : undefined,
           value: formatPrice(
             model,
             'input',
@@ -197,11 +209,12 @@ export function ModelPriceCell(props: {
             options.priceRate,
             options.usdExchangeRate,
             options.selectedGroup,
-            false
+            toman
           ),
         },
         {
           label: t('Output'),
+          unit: toman ? t('per thousand tokens') : undefined,
           value: formatPrice(
             model,
             'output',
@@ -210,10 +223,11 @@ export function ModelPriceCell(props: {
             options.priceRate,
             options.usdExchangeRate,
             options.selectedGroup,
-            false
+            toman
           ),
         },
       ]
+      if (toman) caption = ''
     } else {
       metrics = [
         {
@@ -224,11 +238,13 @@ export function ModelPriceCell(props: {
             options.priceRate,
             options.usdExchangeRate,
             options.selectedGroup,
-            false
+            toman
           ),
         },
       ]
-      caption = `${currencyLabel} / ${t('request')}`
+      caption = toman
+        ? `/ ${t('request')}`
+        : `${currencyLabel} / ${t('request')}`
     }
   }
   return (
@@ -249,19 +265,23 @@ export function ModelPriceCell(props: {
             </span>
             <span
               className='min-w-0 font-mono text-sm break-words whitespace-normal tabular-nums'
-              title={metric.value}
+              title={
+                metric.unit ? `${metric.value} / ${metric.unit}` : metric.value
+              }
             >
-              {metric.value}
+              <MoneyFigure amount={metric.value} unit={metric.unit} />
             </span>
           </span>
         ))}
       </span>
-      <span
-        className='text-muted-foreground block text-xs font-normal break-words whitespace-normal sm:truncate'
-        title={caption}
-      >
-        {caption}
-      </span>
+      {caption ? (
+        <span
+          className='text-muted-foreground block text-xs font-normal break-words whitespace-normal sm:truncate'
+          title={caption}
+        >
+          {caption}
+        </span>
+      ) : null}
     </span>
   )
 }

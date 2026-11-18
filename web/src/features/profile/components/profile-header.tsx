@@ -17,8 +17,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { Activity, BarChart3, WalletCards } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { MoneyFigure } from '@/components/money-figure'
 import { StatusBadge } from '@/components/status-badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
@@ -86,21 +88,21 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
   const roleLabel = getRoleLabel(profile.role)
   const stats: {
     label: string
-    value: string
+    value: ReactNode
     description: string
     icon: typeof WalletCards
     tone: IconBadgeTone
   }[] = [
     {
       label: t('Current Balance'),
-      value: formatQuota(profile.quota),
+      value: <MoneyFigure amount={formatQuota(profile.quota)} />,
       description: t('Remaining quota'),
       icon: WalletCards,
       tone: 'success',
     },
     {
       label: t('Total Usage'),
-      value: formatQuota(profile.used_quota),
+      value: <MoneyFigure amount={formatQuota(profile.used_quota)} />,
       description: t('Total consumed quota'),
       icon: BarChart3,
       tone: 'info',
