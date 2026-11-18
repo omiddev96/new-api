@@ -18,8 +18,9 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { queryOptions, type QueryClient } from '@tanstack/react-query'
 
+import { resolveDisplaySystemName } from '@/brand/jetcloud'
 import { getStatus } from '@/lib/api'
-import { DEFAULT_SYSTEM_NAME, DEFAULT_LOGO } from '@/lib/constants'
+import { DEFAULT_LOGO } from '@/lib/constants'
 import {
   useSystemConfigStore,
   type CurrencyConfig,
@@ -92,7 +93,7 @@ export function mapStatusDataToConfig(
   }
 
   return {
-    systemName: (data.system_name as string | undefined) || DEFAULT_SYSTEM_NAME,
+    systemName: resolveDisplaySystemName(data.system_name as string | undefined),
     logo: (data.logo as string | undefined) || DEFAULT_LOGO,
     footerHtml: data.footer_html as string | undefined,
     demoSiteEnabled: data.demo_site_enabled as boolean | undefined,

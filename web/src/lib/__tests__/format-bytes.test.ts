@@ -30,6 +30,7 @@ test.each([
   ['ja', '1.2 MB'],
   ['ru', '1,2 MB'],
   ['vi', '1,2 MB'],
+  ['fa', '۱٫۲ MB'],
   ['not a language', '1.2 MB'],
 ])('formatBytes in %s writes 1,200,000 bytes as %s', (language, expected) => {
   expect(formatBytes(1_200_000, toIntlLocale(language))).toBe(expected)

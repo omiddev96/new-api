@@ -67,6 +67,17 @@ test('uses Chinese calendar locales for zhCN and zhTW in both date pickers', asy
   expect(await openCalendar()).toHaveTextContent('zh-TW')
 })
 
+test('shows a Jalali date and calendar when Persian is active', async () => {
+  await setInterfaceLanguage('fa')
+  render(<DatePicker selected={selected} onSelect={() => undefined} />)
+  expect(
+    screen.getByRole('button', { name: /۱۴۰۵\/۰۷\/۱۹/ })
+  ).toBeInTheDocument()
+  await userEvent.click(screen.getByRole('button', { name: /۱۴۰۵\/۰۷\/۱۹/ }))
+  expect(await screen.findByRole('button', { name: /۱۹ مهر ۱۴۰۵/ })).toBeVisible()
+  expect(screen.queryByTestId('calendar-locale')).not.toBeInTheDocument()
+})
+
 test('keeps French on the French calendar locale', async () => {
   await setInterfaceLanguage('fr')
   render(<DatePicker selected={selected} onSelect={() => undefined} />)

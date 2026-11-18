@@ -17,15 +17,27 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { DirectionProvider as BaseDirectionProvider } from '@base-ui/react/direction-provider'
+import i18next from 'i18next'
 import { createContext, useContext, useEffect, useState } from 'react'
 
-import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
+import { directionForLanguage, toIntlLocale } from '@/i18n/languages'
+import { setCookie } from '@/lib/cookies'
 
 export type Direction = 'ltr' | 'rtl'
 
-const DEFAULT_DIRECTION = 'ltr'
 const DIRECTION_COOKIE_NAME = 'dir'
 const DIRECTION_COOKIE_MAX_AGE = 60 * 60 * 24 * 365 // 1 year
+
+function currentLanguage(): string {
+  return i18next.resolvedLanguage || i18next.language || 'fa'
+}
+
+function applyDocumentLocale(language: string, dir: Direction) {
+  const html = document.documentElement
+  html.setAttribute('dir', dir)
+  const intl = toIntlLocale(language)
+  if (intl) html.setAttribute('lang', intl)
+}
 
 type DirectionContextType = {
   defaultDir: Direction
@@ -37,13 +49,27 @@ type DirectionContextType = {
 const DirectionContext = createContext<DirectionContextType | null>(null)
 
 export function DirectionProvider({ children }: { children: React.ReactNode }) {
-  const [dir, _setDir] = useState<Direction>(
-    () => (getCookie(DIRECTION_COOKIE_NAME) as Direction) || DEFAULT_DIRECTION
+  const [dir, _setDir] = useState<Direction>(() =>
+    directionForLanguage(currentLanguage())
   )
+  const defaultDir = directionForLanguage(currentLanguage())
 
   useEffect(() => {
-    const htmlElement = document.documentElement
-    htmlElement.setAttribute('dir', dir)
+    const apply = (language: string) => {
+      const next = directionForLanguage(language)
+      _setDir(next)
+      setCookie(DIRECTION_COOKIE_NAME, next, DIRECTION_COOKIE_MAX_AGE)
+      applyDocumentLocale(language, next)
+    }
+    apply(currentLanguage())
+    i18next.on('languageChanged', apply)
+    return () => {
+      i18next.off('languageChanged', apply)
+    }
+  }, [])
+
+  useEffect(() => {
+    applyDocumentLocale(currentLanguage(), dir)
   }, [dir])
 
   const setDir = (dir: Direction) => {
@@ -52,14 +78,15 @@ export function DirectionProvider({ children }: { children: React.ReactNode }) {
   }
 
   const resetDir = () => {
-    _setDir(DEFAULT_DIRECTION)
-    removeCookie(DIRECTION_COOKIE_NAME)
+    const next = directionForLanguage(currentLanguage())
+    _setDir(next)
+    setCookie(DIRECTION_COOKIE_NAME, next, DIRECTION_COOKIE_MAX_AGE)
   }
 
   return (
     <DirectionContext
       value={{
-        defaultDir: DEFAULT_DIRECTION,
+        defaultDir,
         dir,
         setDir,
         resetDir,

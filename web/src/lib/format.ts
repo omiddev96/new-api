@@ -17,6 +17,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import dayjs from '@/lib/dayjs'
+import {
+  formatJalaliDate,
+  formatJalaliDateTime,
+  isPersianLanguage,
+} from '@/lib/jalali'
 
 import {
   formatCurrencyFromUSD,
@@ -188,6 +193,7 @@ export function formatTimestampToDate(
     return '-'
   }
   const ms = unit === 'seconds' ? timestamp * 1000 : timestamp
+  if (isPersianLanguage()) return formatJalaliDateTime(ms)
   return dayjs(ms).format('YYYY-MM-DD HH:mm:ss')
 }
 
@@ -231,13 +237,15 @@ export function formatTimestampRelative(
   return formatter.format(Math.round(diffSeconds / 31536000), 'year')
 }
 
-/** Format a Date object to YYYY-MM-DD HH:mm:ss */
+/** Format a Date object to YYYY-MM-DD HH:mm:ss, or a Jalali date in Persian. */
 export function formatDateTimeStr(date: Date): string {
+  if (isPersianLanguage()) return formatJalaliDateTime(date)
   return dayjs(date).format('YYYY-MM-DD HH:mm:ss')
 }
 
-/** Format a Date object to YYYY-MM-DD */
+/** Format a Date object to YYYY-MM-DD, or a Jalali date in Persian. */
 export function formatDateStr(date: Date): string {
+  if (isPersianLanguage()) return formatJalaliDate(date)
   return dayjs(date).format('YYYY-MM-DD')
 }
 

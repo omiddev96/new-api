@@ -103,7 +103,7 @@ Secure 模式的 Origin 校验不信任客户端直接发送的 `X-Forwarded-Pro
 `SESSION_COOKIE_TRUSTED_URL` 现在具有明确的新语义：它是 refresh/logout Cookie 端点的可信 Origin 列表，不是 CORS 白名单。配置规则如下：
 
 - 仅在 `SESSION_COOKIE_SECURE=true` 时配置；多个值用英文逗号分隔。
-- 每项必须是精确的 HTTPS Origin，例如 `https://panel.example.com` 或 `https://panel.example.com:8443`。
+- 每项必须是精确的 HTTPS Origin，例如 `https://jetcloudapi.com` 或 `https://jetcloudapi.com:8443`。
 - 不接受通配符、路径、查询参数、用户信息或域名后缀匹配。
 - 不会修改 relay、旧 billing dashboard、`/api/usage/token` 或 `/api/log/token` 的 CORS 行为。浏览器使用 `sk-` key 直连 relay 的场景保持不变。
 
@@ -120,7 +120,7 @@ SESSION_COOKIE_SECURE=false
 ```env
 SESSION_SECRET=<high-entropy-random-value>
 SESSION_COOKIE_SECURE=true
-SESSION_COOKIE_TRUSTED_URL=https://panel.example.com,https://admin.example.com
+SESSION_COOKIE_TRUSTED_URL=https://jetcloudapi.com
 ```
 
 该开关只控制面板 Refresh Cookie 和 refresh/logout 的 OriginGuard，不会修改 relay、旧 billing dashboard、`/api/usage/token` 或 `/api/log/token` 的 CORS 行为。

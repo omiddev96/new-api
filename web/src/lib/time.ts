@@ -20,6 +20,12 @@ For commercial licensing, please contact support@quantumnous.com
  * Time utility functions for consistent time handling across the application
  */
 import dayjs from '@/lib/dayjs'
+import {
+  formatJalaliChartTime,
+  formatJalaliDate,
+  formatJalaliDateTime,
+  isPersianLanguage,
+} from '@/lib/jalali'
 
 /**
  * Time granularity type
@@ -143,6 +149,7 @@ export function computeTimeRange(
  * Format Unix timestamp (seconds) to YYYY-MM-DD
  */
 export function formatDate(tsSec: number): string {
+  if (isPersianLanguage()) return formatJalaliDate(tsSec * 1000)
   return dayjs(tsSec * 1000).format('YYYY-MM-DD')
 }
 
@@ -150,6 +157,7 @@ export function formatDate(tsSec: number): string {
  * Format Date object to YYYY-MM-DD HH:mm:ss
  */
 export function formatDateTimeObject(date: Date): string {
+  if (isPersianLanguage()) return formatJalaliDateTime(date)
   return dayjs(date).format('YYYY-MM-DD HH:mm:ss')
 }
 
@@ -163,6 +171,7 @@ export function formatChartTime(
   timestamp: number,
   granularity: TimeGranularity = 'day'
 ): string {
+  if (isPersianLanguage()) return formatJalaliChartTime(timestamp, granularity)
   const d = dayjs(timestamp * 1000)
   let result = d.format('MM-DD')
 

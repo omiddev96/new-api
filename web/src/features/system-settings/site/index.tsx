@@ -16,6 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { JETCLOUD } from '@/brand/jetcloud'
+
 import { SettingsPage } from '../components/settings-page'
 import type { SiteSettings } from '../types'
 import {
@@ -26,7 +28,7 @@ import {
 
 const defaultSiteSettings: SiteSettings = {
   Notice: '',
-  SystemName: 'New API',
+  SystemName: JETCLOUD.name,
   Logo: '',
   Footer: '',
   About: '',

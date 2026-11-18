@@ -18,7 +18,7 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { describe, expect, test } from 'vitest'
 
-import { convertDetectedLanguage } from './languages'
+import { convertDetectedLanguage, directionForLanguage, normalizeInterfaceLanguage } from './languages'
 
 describe('convertDetectedLanguage', () => {
   test('maps browser BCP-47 Chinese tags onto interface codes', () => {
@@ -45,5 +45,29 @@ describe('convertDetectedLanguage', () => {
     expect(convertDetectedLanguage('en')).toBe('en')
     expect(convertDetectedLanguage('fr-FR')).toBe('fr-FR')
     expect(convertDetectedLanguage('ja')).toBe('ja')
+  })
+
+  test('maps Persian browser tags onto the fa interface code', () => {
+    expect(convertDetectedLanguage('fa')).toBe('fa')
+    expect(convertDetectedLanguage('fa-IR')).toBe('fa')
+    expect(convertDetectedLanguage('fa-AF')).toBe('fa')
+  })
+})
+
+describe('normalizeInterfaceLanguage', () => {
+  test('defaults an empty preference to Persian', () => {
+    expect(normalizeInterfaceLanguage(null)).toBe('fa')
+    expect(normalizeInterfaceLanguage('fa-IR')).toBe('fa')
+    expect(normalizeInterfaceLanguage('en')).toBe('en')
+  })
+})
+
+describe('directionForLanguage', () => {
+  test('uses rtl for Persian and ltr for the other interface languages', () => {
+    expect(directionForLanguage('fa')).toBe('rtl')
+    expect(directionForLanguage('fa-IR')).toBe('rtl')
+    expect(directionForLanguage('en')).toBe('ltr')
+    expect(directionForLanguage('zhCN')).toBe('ltr')
+    expect(directionForLanguage(undefined)).toBe('rtl')
   })
 })

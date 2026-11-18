@@ -28,6 +28,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import dayjs from '@/lib/dayjs'
+import { formatDateTimeStr } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 interface CompactDateTimeRangePickerProps {
@@ -60,8 +61,8 @@ export function CompactDateTimeRangePicker({
 
   const label = useMemo(() => {
     if (!start && !end) return t('Date Range')
-    const startText = start ? dayjs(start).format('YYYY-MM-DD HH:mm:ss') : '-'
-    const endText = end ? dayjs(end).format('YYYY-MM-DD HH:mm:ss') : '-'
+    const startText = start ? formatDateTimeStr(start) : '-'
+    const endText = end ? formatDateTimeStr(end) : '-'
     return `${startText} ~ ${endText}`
   }, [end, start, t])
 
