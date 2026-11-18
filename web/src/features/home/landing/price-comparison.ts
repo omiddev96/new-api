@@ -16,6 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { formatTomanAmount, isTomanSymbol } from '@/lib/currency'
 
 /**
  * Official rates are OpenAI Standard, short context, per 1M tokens.
@@ -126,6 +127,9 @@ export function formatComparisonMoney(
       ? options.exchangeRate
       : 1
   const value = usd * rate
+  if (options.custom && isTomanSymbol(options.symbol)) {
+    return formatTomanAmount(value, options.symbol)
+  }
   const formatted = new Intl.NumberFormat(options.locale, {
     maximumFractionDigits: value >= 100 ? 0 : 2,
   }).format(value)

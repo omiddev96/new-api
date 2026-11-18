@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { formatPricingNumber } from '@/features/system-settings/models/pricing-format'
+import { formatTomanAmount, isTomanSymbol } from '@/lib/currency'
 import type { CurrencyConfig } from '@/stores/system-config-store'
 
 export type PricingCurrency = {
@@ -65,5 +66,8 @@ export function formatPricingAmount(
   if (value === '') return ''
   const amount = Number(value) * currency.exchangeRate
   if (!Number.isFinite(amount)) return '—'
+  if (isTomanSymbol(currency.symbol)) {
+    return formatTomanAmount(amount, currency.symbol)
+  }
   return `${currency.symbol}${formatPricingNumber(amount)}`
 }

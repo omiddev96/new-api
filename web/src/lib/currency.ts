@@ -297,6 +297,36 @@ function adjustForMinimum(
   return value
 }
 
+const TOMAN_LOCALE = 'fa-IR'
+
+export function isTomanSymbol(symbol: string | null | undefined): boolean {
+  return (symbol ?? '').replaceAll('\u200c', '').trim() === 'تومان'
+}
+
+export function isTomanDisplay(): boolean {
+  const { meta } = getCurrencyDisplay()
+  return meta.kind === 'custom' && isTomanSymbol(meta.symbol)
+}
+
+function tomanFractionDigits(value: number): number {
+  return Math.abs(value) >= 1 ? 0 : 2
+}
+
+/** Persian digits, grouping, and the symbol after the number. */
+export function formatTomanAmount(
+  value: number,
+  symbol = 'تومان',
+  showSymbol = true
+): string {
+  const formatted = new Intl.NumberFormat(TOMAN_LOCALE, {
+    useGrouping: true,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: tomanFractionDigits(value),
+  }).format(value)
+  if (!showSymbol) return formatted
+  return `${formatted} ${symbol.replaceAll('\u200c', '').trim()}`
+}
+
 function formatCurrencyValue(
   value: number,
   options: ResolvedCurrencyFormatOptions,
@@ -315,6 +345,10 @@ function formatCurrencyValue(
       options.digitsSmall,
       options.abbreviate
     )
+  }
+
+  if (meta.kind === 'custom' && isTomanSymbol(meta.symbol)) {
+    return formatTomanAmount(value, meta.symbol, options.showSymbol)
   }
 
   const digits = getFractionDigits(

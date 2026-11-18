@@ -65,10 +65,11 @@ import {
   getCachePriceLabels,
   getCachePricingMode,
 } from '@/features/pricing/lib/cache-pricing'
+import { perTokenPriceSuffix } from '@/features/pricing/lib/price'
 import { pluginUsageSchema } from '@/features/pricing/lib/plugin-pricing'
 import { PolicyDecisionRecord } from '@/features/system-settings/request-policies/decision-record'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
-import { formatBillingCurrencyFromUSD } from '@/lib/currency'
+import { formatBillingCurrencyFromUSD, isTomanDisplay } from '@/lib/currency'
 import { formatLogQuota, formatTokens, formatUseTime } from '@/lib/format'
 import { translateServerText } from '@/lib/server-error-message'
 import { cn } from '@/lib/utils'
@@ -192,6 +193,9 @@ function BillingBreakdown(props: {
   const rows: Array<{ label: string; value: string }> = []
   const priceOpts = { digitsLarge: 4, digitsSmall: 6, abbreviate: false }
   const fmtPrice = (usd: number) => formatBillingCurrencyFromUSD(usd, priceOpts)
+  const perMillion = isTomanDisplay()
+    ? ` ${perTokenPriceSuffix('M', t)}`
+    : '/M'
   const baseInputUSD = other.model_ratio != null ? other.model_ratio * 2.0 : 0
 
   if (isTieredExpr) {
@@ -209,7 +213,9 @@ function BillingBreakdown(props: {
       for (const entry of tieredSummary.priceEntries) {
         rows.push({
           label: t(entry.shortLabel),
-          value: `${fmtPrice(entry.price)}/${entry.unit ? t(entry.unit) : 'M'}`,
+          value: entry.unit
+            ? `${fmtPrice(entry.price)}/${t(entry.unit)}`
+            : `${fmtPrice(entry.price)}${perMillion}`,
         })
       }
     } else {
@@ -231,13 +237,13 @@ function BillingBreakdown(props: {
     if (other.model_ratio != null) {
       rows.push({
         label: t('Input'),
-        value: `${fmtPrice(baseInputUSD)}/M`,
+        value: `${fmtPrice(baseInputUSD)}${perMillion}`,
       })
     }
     if (other.completion_ratio != null && other.model_ratio != null) {
       rows.push({
         label: t('Output'),
-        value: `${fmtPrice(baseInputUSD * other.completion_ratio)}/M`,
+        value: `${fmtPrice(baseInputUSD * other.completion_ratio)}${perMillion}`,
       })
     }
   }
@@ -260,7 +266,7 @@ function BillingBreakdown(props: {
     if (other.cache_ratio != null && other.cache_ratio !== 1) {
       rows.push({
         label: t('Cache Read'),
-        value: `${fmtPrice(baseInputUSD * other.cache_ratio)}/M`,
+        value: `${fmtPrice(baseInputUSD * other.cache_ratio)}${perMillion}`,
       })
     }
     if (
@@ -269,7 +275,7 @@ function BillingBreakdown(props: {
     ) {
       rows.push({
         label: hasCacheWrite12h ? t('Cache Write (30m)') : t('Cache Write'),
-        value: `${fmtPrice(baseInputUSD * other.cache_creation_ratio)}/M`,
+        value: `${fmtPrice(baseInputUSD * other.cache_creation_ratio)}${perMillion}`,
       })
     }
     if (
@@ -278,7 +284,7 @@ function BillingBreakdown(props: {
     ) {
       rows.push({
         label: t('Cache Write (5m)'),
-        value: `${fmtPrice(baseInputUSD * other.cache_creation_ratio_5m)}/M`,
+        value: `${fmtPrice(baseInputUSD * other.cache_creation_ratio_5m)}${perMillion}`,
       })
     }
     if (
@@ -287,7 +293,7 @@ function BillingBreakdown(props: {
     ) {
       rows.push({
         label: t('Cache Write (1h)'),
-        value: `${fmtPrice(baseInputUSD * other.cache_creation_ratio_1h)}/M`,
+        value: `${fmtPrice(baseInputUSD * other.cache_creation_ratio_1h)}${perMillion}`,
       })
     }
     if (
@@ -296,7 +302,7 @@ function BillingBreakdown(props: {
     ) {
       rows.push({
         label: t('Cache Write (12h)'),
-        value: `${fmtPrice(baseInputUSD * other.cache_creation_ratio_12h)}/M`,
+        value: `${fmtPrice(baseInputUSD * other.cache_creation_ratio_12h)}${perMillion}`,
       })
     }
   }
@@ -305,7 +311,7 @@ function BillingBreakdown(props: {
     if (other.audio_ratio != null && other.audio_ratio !== 1) {
       rows.push({
         label: t('Audio input'),
-        value: `${fmtPrice(baseInputUSD * other.audio_ratio)}/M`,
+        value: `${fmtPrice(baseInputUSD * other.audio_ratio)}${perMillion}`,
       })
     }
 
@@ -315,14 +321,14 @@ function BillingBreakdown(props: {
     ) {
       rows.push({
         label: t('Audio output'),
-        value: `${fmtPrice(baseInputUSD * other.audio_completion_ratio)}/M`,
+        value: `${fmtPrice(baseInputUSD * other.audio_completion_ratio)}${perMillion}`,
       })
     }
 
     if (other.image_ratio != null && other.image_ratio !== 1) {
       rows.push({
         label: t('Image input'),
-        value: `${fmtPrice(baseInputUSD * other.image_ratio)}/M`,
+        value: `${fmtPrice(baseInputUSD * other.image_ratio)}${perMillion}`,
       })
     }
   }

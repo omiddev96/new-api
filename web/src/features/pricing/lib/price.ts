@@ -16,7 +16,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { formatBillingCurrencyFromUSD } from '@/lib/currency'
+import {
+  formatBillingCurrencyFromUSD,
+  isTomanDisplay,
+} from '@/lib/currency'
 
 import { QUOTA_TYPE_VALUES, TOKEN_UNIT_DIVISORS } from '../constants'
 import type { PricingModel, TokenUnit, PriceType } from '../types'
@@ -141,6 +144,39 @@ function applyRechargeRate(
 /**
  * Format token-based price for display
  */
+const TOMAN_LOCALE = 'fa-IR'
+
+/** `1M` / `1K`, with a Persian ۱ when the site currency is toman. */
+export function pricingTokenUnitMark(unit: TokenUnit): string {
+  const code = unit === 'K' ? 'K' : 'M'
+  if (!isTomanDisplay()) return `1${code}`
+  const one = new Intl.NumberFormat(TOMAN_LOCALE, {
+    maximumFractionDigits: 0,
+  }).format(1)
+  return `${one}${code}`
+}
+
+export function perTokenPriceSuffix(
+  unit: TokenUnit,
+  translate: (key: string, values?: Record<string, unknown>) => string
+): string {
+  const mark = pricingTokenUnitMark(unit)
+  if (!isTomanDisplay()) return `/ ${mark}`
+  return `/ ${translate('{{unit}} tokens', { unit: mark })}`
+}
+
+/** Keep a task unit as-is. A token unit becomes `/ ۱M توکن` for toman. */
+export function shownUnitSuffix(
+  unitLabel: string,
+  unit: TokenUnit,
+  translate: (key: string, values?: Record<string, unknown>) => string
+): string {
+  if (isTomanDisplay() && unitLabel === pricingTokenUnitMark(unit)) {
+    return perTokenPriceSuffix(unit, translate)
+  }
+  return `/ ${unitLabel}`
+}
+
 export function formatPrice(
   model: PricingModel,
   type: PriceType,

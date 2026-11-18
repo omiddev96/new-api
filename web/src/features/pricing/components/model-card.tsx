@@ -39,7 +39,12 @@ import {
 import { parseTags } from '../lib/filters'
 import { isTokenBasedModel } from '../lib/model-helpers'
 import { withBasePricing } from '../lib/plugin-pricing'
-import { formatPrice, formatRequestPrice } from '../lib/price'
+import {
+  formatPrice,
+  formatRequestPrice,
+  pricingTokenUnitMark,
+  shownUnitSuffix,
+} from '../lib/price'
 import { taskPriceLabel, taskUsageUnitLabel } from '../lib/task-price-display'
 import type { PricingModel, PriceType, TokenUnit } from '../types'
 import { ModelBillingModeBadge } from './model-billing-mode-badge'
@@ -65,7 +70,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   // Prices summarise the model-level price when ordinary requests pay it.
   const model = useMemo(() => withBasePricing(props.model), [props.model])
   const isTokenBased = isTokenBasedModel(model)
-  const tokenUnitLabel = tokenUnit === 'K' ? '1K' : '1M'
+  const tokenUnitLabel = pricingTokenUnitMark(tokenUnit)
   const tags = parseTags(props.model.tags)
   const groups = props.model.enable_groups || []
   const endpoints = props.model.supported_endpoint_types || []
@@ -173,7 +178,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                     <span>{entry.formattedRange ?? entry.formatted}</span>
                     <span className='text-muted-foreground text-xs font-normal whitespace-nowrap'>
                       {' '}
-                      / {unitLabel}
+                      {shownUnitSuffix(unitLabel, tokenUnit, t)}
                     </span>
                   </span>
                 </div>
@@ -244,7 +249,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
           )}
           <span className='text-muted-foreground text-xs font-normal'>
             {' '}
-            / {tokenUnitLabel}
+            {shownUnitSuffix(tokenUnitLabel, tokenUnit, t)}
           </span>
         </span>
       </div>

@@ -22,9 +22,11 @@ import { useTranslation } from 'react-i18next'
 
 import { StaticDataTable } from '@/components/data-table'
 import { Badge } from '@/components/ui/badge'
+import { formatTomanAmount, isTomanDisplay, isTomanSymbol } from '@/lib/currency'
 import { cn } from '@/lib/utils'
 import { useSystemConfigStore } from '@/stores/system-config-store'
 
+import { perTokenPriceSuffix } from '../lib/price'
 import {
   BILLING_PRICING_VARS,
   MATCH_CONTAINS,
@@ -125,7 +127,11 @@ function breakdownPriceFieldLabel(
     return <span className='break-words whitespace-normal'>{field.label}</span>
   }
   return field.showTokenUnit
-    ? `${t(field.label)} / ${t('1M token')}`
+    ? `${t(field.label)} ${
+        isTomanDisplay()
+          ? perTokenPriceSuffix('M', t).trim()
+          : `/ ${t('1M token')}`
+      }`
     : t(field.label)
 }
 
@@ -205,23 +211,33 @@ function formatBreakdownPrice(
   field: BreakdownPriceField,
   symbol: string,
   rate: number,
-  t: (key: string) => string,
+  t: (key: string, values?: Record<string, unknown>) => string,
   taskPriceOptions: DynamicPricingBreakdownProps['taskPriceOptions'],
   language: string
 ): string {
-  const amount =
+  const toman = isTomanSymbol(symbol)
+  let amount = `${symbol}${(value * rate).toFixed(4)}`
+  if (
     field.labelKind === 'schema' ||
     field.unit === 'request' ||
     field.unit === 'image'
-      ? formatTaskUsageUnitPrice(value, { tokenUnit: 'M', ...taskPriceOptions })
-      : `${symbol}${(value * rate).toFixed(4)}`
+  ) {
+    amount = formatTaskUsageUnitPrice(value, {
+      tokenUnit: 'M',
+      ...taskPriceOptions,
+    })
+  } else if (toman) {
+    amount = formatTomanAmount(value * rate, symbol)
+  }
   if (field.unit === 'second') return `${amount}/${t('s')}`
   if (field.unit === 'count') {
     return `${amount}/${taskUsageUnitLabel(field, language, t('unit'))}`
   }
   if (field.unit === 'credit') return `${amount}/${t('credit')}`
   if (field.unit === 'token' && field.labelKind === 'schema') {
-    return `${amount}/${t('1M token')}`
+    return toman
+      ? `${amount} ${perTokenPriceSuffix('M', t).trim()}`
+      : `${amount}/${t('1M token')}`
   }
   if (field.unit === 'request') return `${amount}/${t('request')}`
   if (field.unit === 'image') return `${amount}/${t('image')}`

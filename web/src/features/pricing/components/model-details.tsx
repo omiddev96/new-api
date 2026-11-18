@@ -85,7 +85,12 @@ import {
   withOrdinaryPricing,
   withPluginPricing,
 } from '../lib/plugin-pricing'
-import { formatFixedPrice, formatGroupPrice } from '../lib/price'
+import {
+  formatFixedPrice,
+  formatGroupPrice,
+  pricingTokenUnitMark,
+  shownUnitSuffix,
+} from '../lib/price'
 import {
   evaluateTaskUsageExamples,
   getTaskEnumFields,
@@ -651,7 +656,7 @@ function PriceSection(props: {
 }) {
   const { t, i18n } = useTranslation()
   const isTokenBased = isTokenBasedModel(props.model)
-  const tokenUnitLabel = props.tokenUnit === 'K' ? '1K' : '1M'
+  const tokenUnitLabel = pricingTokenUnitMark(props.tokenUnit)
   const baseGroupKey = '_base'
   const baseGroupRatioMap = { [baseGroupKey]: 1 }
   const currency = useSystemConfigStore((state) => state.config.currency)
@@ -787,7 +792,7 @@ function PriceSection(props: {
                   <div className='text-foreground mt-1 font-mono text-base font-semibold tabular-nums'>
                     {entry.formattedRange ?? entry.formatted}
                     <span className='text-muted-foreground/40 ml-1 text-xs font-normal'>
-                      / {unitLabel}
+                      {shownUnitSuffix(unitLabel, props.tokenUnit, t)}
                     </span>
                   </div>
                 </div>
@@ -822,7 +827,7 @@ function PriceSection(props: {
                     <span className='text-muted-foreground font-mono text-sm tabular-nums'>
                       {entry.formattedRange ?? entry.formatted}
                       <span className='text-muted-foreground/40 ml-1 text-xs font-normal'>
-                        / {unitLabel}
+                        {shownUnitSuffix(unitLabel, props.tokenUnit, t)}
                       </span>
                     </span>
                   </div>
@@ -881,7 +886,7 @@ function PriceSection(props: {
         baseGroupRatioMap
       )}
       <span className='text-muted-foreground/40 ml-1 text-xs font-normal'>
-        / {tokenUnitLabel}
+        {shownUnitSuffix(tokenUnitLabel, props.tokenUnit, t)}
       </span>
     </>
   )
@@ -1098,7 +1103,7 @@ function ProviderGroupPricingSection(
   )
 
   const isTokenBased = isTokenBasedModel(props.model)
-  const tokenUnitLabel = props.tokenUnit === 'K' ? '1K' : '1M'
+  const tokenUnitLabel = pricingTokenUnitMark(props.tokenUnit)
 
   const extraPriceTypes = useMemo(() => {
     const types: { label: string; type: PriceType }[] = []
