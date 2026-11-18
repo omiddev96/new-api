@@ -130,12 +130,67 @@ For commercial licensing, please contact support@quantumnous.com
   }
 }
 
+.jet-price-bar {
+  transition: width 0.8s ease;
+}
+
+.jet-mascot-float {
+  animation: jet-float 3.2s ease-in-out infinite;
+}
+
+.jet-mascot-arm {
+  transform-origin: 212px 186px;
+  animation: jet-wave 1.6s ease-in-out infinite;
+}
+
+.jet-chain-break {
+  transform-origin: 86px 150px;
+  animation: jet-snap 2.4s ease-in-out infinite;
+}
+
+@keyframes jet-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes jet-wave {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-18deg);
+  }
+}
+
+@keyframes jet-snap {
+  0%,
+  40% {
+    opacity: 1;
+  }
+  55%,
+  100% {
+    opacity: 0.2;
+    transform: translateX(-8px) rotate(-12deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .jet-orbit,
   .jet-orbit-icon,
   .jet-marquee-track,
   .jet-trail,
-  .jet-nodes circle {
+  .jet-nodes circle,
+  .jet-mascot-float,
+  .jet-mascot-arm,
+  .jet-chain-break,
+  .jet-price-bar {
     animation: none;
+    transition: none;
   }
 }

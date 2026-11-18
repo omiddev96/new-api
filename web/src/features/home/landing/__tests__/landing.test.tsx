@@ -56,6 +56,14 @@ test('shows the JetCloud headline and hides partner and open-source claims', asy
     'href',
     '/pricing'
   )
+  expect(
+    screen.getByRole('heading', {
+      name: 'Stop worrying about sanctions and banned accounts.',
+    })
+  ).toBeInTheDocument()
+  expect(
+    screen.queryByRole('heading', { name: 'Pay less per million tokens' })
+  ).not.toBeInTheDocument()
 })
 
 test('swaps only the model name in the demo snippet', async () => {
