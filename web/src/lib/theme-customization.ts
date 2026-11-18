@@ -27,7 +27,7 @@ export const THEME_PRESETS = [
   {
     value: 'default',
     name: 'JetCloud API',
-    swatches: ['#1d4ed8', '#38bdf8'],
+    swatches: ['#8B5CF6', '#22D3EE'],
   },
   {
     // Inspired by Anthropic's official brand language: warm cream canvas

@@ -21,11 +21,22 @@ For commercial licensing, please contact support@quantumnous.com
  * JetCloud API console brand. The stored system name still comes from system
  * settings; only an empty value or the upstream stock name falls back here.
  */
+/**
+ * Swap the mark by replacing the files at these public paths.
+ * `logo` is the icon used in the console. Lockups add the wordmark.
+ * Favicon, Apple touch icon, PWA icons, and the social image use the same mark.
+ */
 export const JETCLOUD = {
   name: 'جت کلاد API',
   nameEn: 'JetCloud API',
   url: 'https://jetcloudapi.com',
   logo: '/logo.svg',
+  icon: '/icon.svg',
+  favicon: '/favicon.ico',
+  appleTouchIcon: '/apple-touch-icon.png',
+  icon192: '/icon-192.png',
+  icon512: '/icon-512.png',
+  ogImage: '/og-image.png',
   upstreamDefaultName: 'New API',
 } as const
 
