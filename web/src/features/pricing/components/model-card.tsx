@@ -21,6 +21,7 @@ import { memo, useMemo, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { CopyButton } from '@/components/copy-button'
+import { MoneyFigure } from '@/components/money-figure'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { getLobeIcon } from '@/lib/lobe-icon'
@@ -175,8 +176,8 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                     </span>
                   )}
                   <span className='flex flex-wrap items-baseline gap-x-1 font-mono text-sm font-semibold tabular-nums'>
-                    <span>{entry.formattedRange ?? entry.formatted}</span>
-                    <span className='text-muted-foreground text-xs font-normal whitespace-nowrap'>
+                    <MoneyFigure amount={entry.formattedRange ?? entry.formatted} />
+                    <span className='text-muted-foreground text-[0.72em] font-normal whitespace-nowrap'>
                       {' '}
                       {shownUnitSuffix(unitLabel, tokenUnit, t)}
                     </span>
@@ -238,16 +239,18 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
       <div key={price.type} className='flex min-w-0 flex-col gap-1'>
         <span className='text-muted-foreground text-xs'>{price.label}</span>
         <span className='font-mono text-sm font-semibold tabular-nums'>
-          {formatPrice(
-            model,
-            price.type,
-            tokenUnit,
-            showRechargePrice,
-            priceRate,
-            usdExchangeRate,
-            props.selectedGroup
-          )}
-          <span className='text-muted-foreground text-xs font-normal'>
+          <MoneyFigure
+            amount={formatPrice(
+              model,
+              price.type,
+              tokenUnit,
+              showRechargePrice,
+              priceRate,
+              usdExchangeRate,
+              props.selectedGroup
+            )}
+          />
+          <span className='text-muted-foreground text-[0.72em] font-normal'>
             {' '}
             {shownUnitSuffix(tokenUnitLabel, tokenUnit, t)}
           </span>

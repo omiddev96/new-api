@@ -20,6 +20,7 @@ import { useReducedMotion } from 'motion/react'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { MoneyFigure } from '@/components/money-figure'
 import { usePricingData } from '@/features/pricing/hooks/use-pricing-data'
 import { useStatus } from '@/hooks/use-status'
 import { toIntlLocale } from '@/i18n/languages'
@@ -180,11 +181,15 @@ function Bar(props: {
   caption: string
   value: string
 }) {
+  const { t } = useTranslation()
+  const unit = props.value.includes('تومان')
+    ? t('per thousand tokens')
+    : undefined
   return (
     <div>
       <div className='text-muted-foreground mb-1 flex justify-between text-xs'>
         <span>{props.caption}</span>
-        <span dir='ltr'>{props.value}</span>
+        <MoneyFigure amount={props.value} unit={unit} />
       </div>
       <div className='h-2.5 overflow-hidden rounded-full bg-white/10'>
         <div

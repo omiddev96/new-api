@@ -126,8 +126,9 @@ export function formatComparisonMoney(
     options.exchangeRate > 0
       ? options.exchangeRate
       : 1
-  const value = usd * rate
-  if (options.custom && isTomanSymbol(options.symbol)) {
+  const perThousand = options.custom && isTomanSymbol(options.symbol)
+  const value = usd * rate * (perThousand ? 0.001 : 1)
+  if (perThousand) {
     return formatTomanAmount(value, options.symbol)
   }
   const formatted = new Intl.NumberFormat(options.locale, {

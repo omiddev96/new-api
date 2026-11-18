@@ -126,13 +126,10 @@ function breakdownPriceFieldLabel(
   if (field.labelKind === 'schema') {
     return <span className='break-words whitespace-normal'>{field.label}</span>
   }
-  return field.showTokenUnit
-    ? `${t(field.label)} ${
-        isTomanDisplay()
-          ? perTokenPriceSuffix('M', t).trim()
-          : `/ ${t('1M token')}`
-      }`
-    : t(field.label)
+  const tokenUnit = isTomanDisplay()
+    ? perTokenPriceSuffix('M', t).trim()
+    : `/ ${t('1M token')}`
+  return field.showTokenUnit ? `${t(field.label)} ${tokenUnit}` : t(field.label)
 }
 
 const VAR_LABELS: Record<string, string> = {
@@ -216,18 +213,19 @@ function formatBreakdownPrice(
   language: string
 ): string {
   const toman = isTomanSymbol(symbol)
-  let amount = `${symbol}${(value * rate).toFixed(4)}`
+  const scaled = toman && field.unit === 'token' ? value / 1000 : value
+  let amount = `${symbol}${(scaled * rate).toFixed(4)}`
   if (
     field.labelKind === 'schema' ||
     field.unit === 'request' ||
     field.unit === 'image'
   ) {
-    amount = formatTaskUsageUnitPrice(value, {
+    amount = formatTaskUsageUnitPrice(scaled, {
       tokenUnit: 'M',
       ...taskPriceOptions,
     })
   } else if (toman) {
-    amount = formatTomanAmount(value * rate, symbol)
+    amount = formatTomanAmount(scaled * rate, symbol)
   }
   if (field.unit === 'second') return `${amount}/${t('s')}`
   if (field.unit === 'count') {

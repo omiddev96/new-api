@@ -80,6 +80,6 @@ describe('price comparison', () => {
         symbol: 'تومان',
         exchangeRate: 280000,
       })
-    ).toBe('۷۸۴٬۰۰۰ تومان')
+    ).toBe('۷۸۴ تومان')
   })
 })

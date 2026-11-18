@@ -30,6 +30,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Skeleton } from '@/components/ui/skeleton'
+import { MoneyFigure } from '@/components/money-figure'
 import { formatLocalCurrencyAmount } from '@/lib/currency'
 
 import { DEFAULT_DISCOUNT_RATE } from '../../constants'
@@ -84,11 +85,13 @@ export function PaymentConfirmDialog({
               {t('Topup Amount')}
             </span>
             <span className='text-lg font-semibold'>
-              {formatLocalCurrencyAmount(topupAmount * usdExchangeRate, {
-                digitsLarge: 2,
-                digitsSmall: 2,
-                abbreviate: false,
-              })}
+              <MoneyFigure
+                amount={formatLocalCurrencyAmount(topupAmount * usdExchangeRate, {
+                  digitsLarge: 2,
+                  digitsSmall: 2,
+                  abbreviate: false,
+                })}
+              />
             </span>
           </div>
 
@@ -101,7 +104,7 @@ export function PaymentConfirmDialog({
             ) : (
               <div className='flex items-baseline gap-2'>
                 <span className='text-2xl font-semibold'>
-                  {formatCurrency(paymentAmount)}
+                  <MoneyFigure amount={formatCurrency(paymentAmount)} />
                 </span>
                 {hasDiscount && (
                   <span className='text-muted-foreground text-sm line-through'>

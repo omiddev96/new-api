@@ -173,11 +173,13 @@ function buildTypeDetailSegments(
   const segments: DetailSegment[] = []
 
   const priceOpts = { digitsLarge: 4, digitsSmall: 6, abbreviate: false }
-  const perMillion = isTomanDisplay() ? ` ${perTokenPriceSuffix('M', t)}` : '/M'
+  const toman = isTomanDisplay()
+  const perMillion = toman ? ` ${perTokenPriceSuffix('M', t)}` : '/M'
+  const tokenUsd = (price: number) => (toman ? price / 1000 : price)
   const formatPrice = (price: number) =>
-    `${formatBillingCurrencyFromUSD(price, priceOpts)}${perMillion}`
+    `${formatBillingCurrencyFromUSD(tokenUsd(price), priceOpts)}${perMillion}`
   const formatPriceCompact = (price: number) =>
-    formatBillingCurrencyFromUSD(price, priceOpts)
+    formatBillingCurrencyFromUSD(tokenUsd(price), priceOpts)
   const formatPriceList = (prices: string[], showUnit: boolean) => {
     const text = prices.join(' / ')
     return showUnit ? `${text}${perMillion}` : text

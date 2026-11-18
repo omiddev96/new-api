@@ -53,8 +53,9 @@ describe('toman currency display', () => {
     expect(formatBillingCurrencyFromUSD(2.8, { digitsLarge: 4 })).toBe(
       '۷۸۴٬۰۰۰ تومان'
     )
-    expect(formatCurrencyFromUSD(10)).toBe('۲٬۸۰۰٬۰۰۰ تومان')
-    expect(formatLocalCurrencyAmount(784000.4)).toBe('۷۸۴٬۰۰۰ تومان')
+    expect(formatCurrencyFromUSD(10)).toBe('۲٫۸ میلیون تومان')
+    expect(formatLocalCurrencyAmount(830000)).toBe('۸۳۰ هزار تومان')
+    expect(formatLocalCurrencyAmount(3_400_000)).toBe('۳٫۴ میلیون تومان')
     expect(formatTomanAmount(784000, 'تومان', false)).toBe('۷۸۴٬۰۰۰')
   })
 
@@ -75,12 +76,11 @@ describe('toman currency display', () => {
     expect(formatBillingCurrencyFromUSD(10)).toBe('€ 9')
   })
 
-  test('labels a per-million price with a persian 1M token unit', () => {
+  test('labels a token price per thousand tokens', () => {
     useToman()
-    const suffix = perTokenPriceSuffix('M', (key, values) => {
-      if (key === '{{unit}} tokens') return `${values?.unit} tokens`
-      return key
-    })
-    expect(suffix).toBe('/ ۱M tokens')
+    const suffix = perTokenPriceSuffix('M', (key) =>
+      key === 'per thousand tokens' ? 'هزار توکن' : key
+    )
+    expect(suffix).toBe('/ هزار توکن')
   })
 })

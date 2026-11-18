@@ -19,6 +19,7 @@ For commercial licensing, please contact support@quantumnous.com
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { MoneyFigure } from '@/components/money-figure'
 import { getCurrencyLabel, isTomanDisplay } from '@/lib/currency'
 import { useSystemConfigStore } from '@/stores/system-config-store'
 
@@ -91,7 +92,7 @@ export function ModelPriceCell(props: {
       currency,
     ]
   )
-  let metrics: Array<{ label: string; value: string }>
+  let metrics: Array<{ label: string; value: string; unit?: string }>
   const providerCaption = dynamic?.providerCount
     ? t('{{count}} providers', { count: dynamic.providerCount })
     : ''
@@ -140,7 +141,9 @@ export function ModelPriceCell(props: {
           unit ? t(unit) : ''
         )
         let suffix = unitLabel ? `/${unitLabel}` : ''
-        if (hasRequestPrice && entry.unit === 'token') {
+        if (toman && entry.unit === 'token') {
+          suffix = ` / ${t('per thousand tokens')}`
+        } else if (hasRequestPrice && entry.unit === 'token') {
           suffix = `/${t('{{unit}} tokens', { unit: tokenUnitLabel })}`
         }
         return {
@@ -197,6 +200,7 @@ export function ModelPriceCell(props: {
       metrics = [
         {
           label: t('Input'),
+          unit: toman ? t('per thousand tokens') : undefined,
           value: formatPrice(
             model,
             'input',
@@ -210,6 +214,7 @@ export function ModelPriceCell(props: {
         },
         {
           label: t('Output'),
+          unit: toman ? t('per thousand tokens') : undefined,
           value: formatPrice(
             model,
             'output',
@@ -222,6 +227,7 @@ export function ModelPriceCell(props: {
           ),
         },
       ]
+      if (toman) caption = ''
     } else {
       metrics = [
         {
@@ -259,19 +265,23 @@ export function ModelPriceCell(props: {
             </span>
             <span
               className='min-w-0 font-mono text-sm break-words whitespace-normal tabular-nums'
-              title={metric.value}
+              title={
+                metric.unit ? `${metric.value} / ${metric.unit}` : metric.value
+              }
             >
-              {metric.value}
+              <MoneyFigure amount={metric.value} unit={metric.unit} />
             </span>
           </span>
         ))}
       </span>
-      <span
-        className='text-muted-foreground block text-xs font-normal break-words whitespace-normal sm:truncate'
-        title={caption}
-      >
-        {caption}
-      </span>
+      {caption ? (
+        <span
+          className='text-muted-foreground block text-xs font-normal break-words whitespace-normal sm:truncate'
+          title={caption}
+        >
+          {caption}
+        </span>
+      ) : null}
     </span>
   )
 }

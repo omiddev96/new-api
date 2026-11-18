@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { formatBillingCurrencyFromUSD } from '@/lib/currency'
+import { formatBillingCurrencyFromUSD, isTomanDisplay } from '@/lib/currency'
 
 import { TOKEN_UNIT_DIVISORS } from '../constants'
 import type {
@@ -212,9 +212,9 @@ export function formatDynamicUnitPrice(
   const groupRatio = options.groupRatioMultiplier ?? 1
   const priceRate = options.priceRate ?? 1
   const usdExchangeRate = options.usdExchangeRate ?? 1
+  const tokenUnit = isTomanDisplay() ? 'K' : options.tokenUnit
   const priceUSD =
-    (valuePerMillionTokens * groupRatio) /
-    TOKEN_UNIT_DIVISORS[options.tokenUnit]
+    (valuePerMillionTokens * groupRatio) / TOKEN_UNIT_DIVISORS[tokenUnit]
   const displayPrice = applyRechargeRate(
     priceUSD,
     options.showRechargePrice ?? false,

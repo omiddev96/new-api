@@ -101,6 +101,11 @@ export interface CurrencyFormatOptions {
   compact?: boolean
   /** Whether to include the currency/custom symbol. Token displays are unchanged. */
   showSymbol?: boolean
+  /**
+   * Toman balances use هزار / میلیون. Token prices stay exact.
+   * Defaults to exact unless the caller opts in.
+   */
+  tomanCompact?: boolean
   /** Locale used for number formatting (defaults to the runtime locale) */
   locale?: Intl.LocalesArgument | undefined
 }
@@ -137,6 +142,7 @@ const DEFAULT_FORMAT_OPTIONS: ResolvedCurrencyFormatOptions = {
   minimumNonZero: 0,
   compact: false,
   showSymbol: true,
+  tomanCompact: false,
   locale: undefined,
 }
 
@@ -240,6 +246,7 @@ function mergeOptions(
       options.minimumNonZero ?? DEFAULT_FORMAT_OPTIONS.minimumNonZero,
     compact: options.compact ?? DEFAULT_FORMAT_OPTIONS.compact,
     showSymbol: options.showSymbol ?? DEFAULT_FORMAT_OPTIONS.showSymbol,
+    tomanCompact: options.tomanCompact ?? DEFAULT_FORMAT_OPTIONS.tomanCompact,
     locale: options.locale ?? DEFAULT_FORMAT_OPTIONS.locale,
   }
 }
@@ -312,19 +319,72 @@ function tomanFractionDigits(value: number): number {
   return Math.abs(value) >= 1 ? 0 : 2
 }
 
-/** Persian digits, grouping, and the symbol after the number. */
-export function formatTomanAmount(
-  value: number,
-  symbol = 'تومان',
-  showSymbol = true
-): string {
-  const formatted = new Intl.NumberFormat(TOMAN_LOCALE, {
+function formatTomanExact(value: number): string {
+  return new Intl.NumberFormat(TOMAN_LOCALE, {
     useGrouping: true,
     minimumFractionDigits: 0,
     maximumFractionDigits: tomanFractionDigits(value),
   }).format(value)
-  if (!showSymbol) return formatted
-  return `${formatted} ${symbol.replaceAll('\u200c', '').trim()}`
+}
+
+function formatTomanScaled(value: number): string {
+  return new Intl.NumberFormat(TOMAN_LOCALE, {
+    useGrouping: true,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 1,
+  }).format(value)
+}
+
+/** Large toman amounts use هزار / میلیون so the zeros stay off the screen. */
+function formatTomanCompact(value: number, symbol: string, showSymbol: boolean): string {
+  const abs = Math.abs(value)
+  if (abs < 10_000) return joinToman(formatTomanExact(value), '', symbol, showSymbol)
+
+  let divisor = 1_000
+  let unit = 'هزار'
+  if (abs >= 1_000_000_000) {
+    divisor = 1_000_000_000
+    unit = 'میلیارد'
+  } else if (abs >= 1_000_000) {
+    divisor = 1_000_000
+    unit = 'میلیون'
+  }
+
+  let scaled = value / divisor
+  if (unit === 'هزار' && Math.abs(Math.round(scaled * 10) / 10) >= 1000) {
+    divisor = 1_000_000
+    unit = 'میلیون'
+    scaled = value / divisor
+  }
+  if (unit === 'میلیون' && Math.abs(Math.round(scaled * 10) / 10) >= 1000) {
+    divisor = 1_000_000_000
+    unit = 'میلیارد'
+    scaled = value / divisor
+  }
+
+  return joinToman(formatTomanScaled(scaled), unit, symbol, showSymbol)
+}
+
+function joinToman(
+  number: string,
+  unit: string,
+  symbol: string,
+  showSymbol: boolean
+): string {
+  const words = [unit, showSymbol ? symbol : ''].filter(Boolean).join(' ')
+  return words ? `${number} ${words}` : number
+}
+
+/** Persian digits, the symbol after the number, and optional compact units. */
+export function formatTomanAmount(
+  value: number,
+  symbol = 'تومان',
+  showSymbol = true,
+  style: 'exact' | 'compact' = 'exact'
+): string {
+  const cleanSymbol = symbol.replaceAll('\u200c', '').trim() || 'تومان'
+  if (style === 'compact') return formatTomanCompact(value, cleanSymbol, showSymbol)
+  return joinToman(formatTomanExact(value), '', cleanSymbol, showSymbol)
 }
 
 function formatCurrencyValue(
@@ -348,7 +408,12 @@ function formatCurrencyValue(
   }
 
   if (meta.kind === 'custom' && isTomanSymbol(meta.symbol)) {
-    return formatTomanAmount(value, meta.symbol, options.showSymbol)
+    return formatTomanAmount(
+      value,
+      meta.symbol,
+      options.showSymbol,
+      options.tomanCompact ? 'compact' : 'exact'
+    )
   }
 
   const digits = getFractionDigits(
@@ -446,7 +511,10 @@ export function formatCurrencyFromUSD(
   if (amountUSD == null || Number.isNaN(amountUSD)) return '-'
 
   const { config, meta } = getCurrencyDisplay()
-  const merged = mergeOptions(options)
+  const merged = mergeOptions({
+    ...options,
+    tomanCompact: options?.tomanCompact ?? true,
+  })
 
   if (meta.kind === 'tokens') {
     const tokens = amountUSD * config.quotaPerUnit
@@ -665,7 +733,10 @@ export function formatLocalCurrencyAmount(
 
   const { config } = getCurrencyDisplay()
   const meta = getBillingDisplayMeta(config)
-  const merged = mergeOptions(options)
+  const merged = mergeOptions({
+    ...options,
+    tomanCompact: options?.tomanCompact ?? true,
+  })
 
   return formatCurrencyValue(amount, merged, meta)
 }

@@ -19,6 +19,7 @@ For commercial licensing, please contact support@quantumnous.com
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { MoneyFigure } from '@/components/money-figure'
 import { useSystemConfigStore } from '@/stores/system-config-store'
 
 import { DEFAULT_TOKEN_UNIT } from '../constants'
@@ -113,7 +114,7 @@ export function CachedPriceCell(props: {
               </span>
             )}
             <span className='font-mono text-sm tabular-nums'>
-              {stripTrailingZeros(entry.formatted)}
+              <MoneyFigure amount={stripTrailingZeros(entry.formatted)} />
             </span>
           </div>
         ))}
@@ -148,7 +149,9 @@ export function CachedPriceCell(props: {
 
   return (
     <div className='max-w-full min-w-0'>
-      <span className='font-mono text-sm tabular-nums'>{cachedPrice}</span>
+      <span className='font-mono text-sm tabular-nums'>
+        <MoneyFigure amount={cachedPrice} />
+      </span>
       <div className='text-muted-foreground/50 text-[10px]'>
         {shownUnitSuffix(tokenUnitLabel, tokenUnit, t)}
       </div>
