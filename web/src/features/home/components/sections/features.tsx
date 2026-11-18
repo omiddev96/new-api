@@ -174,8 +174,10 @@ export function Features(_props: FeaturesProps) {
     },
     {
       icon: <HeartHandshake className='size-5' strokeWidth={1.5} />,
-      title: t('Open Source'),
-      desc: t('Community driven, self-hosted, and extensible'),
+      title: t('In your control'),
+      desc: t(
+        'Set prices, limits, and access for every user from one console.'
+      ),
     },
   ]
 
