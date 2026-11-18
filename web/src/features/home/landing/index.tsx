@@ -35,6 +35,7 @@ import { cn } from '@/lib/utils'
 import { JetMark } from './jet-mark'
 import { SanctionMascot } from './mascot'
 import { PriceComparison } from './price-bars'
+import { ShopTeaser } from './shop-teaser'
 import './landing.css'
 
 const PROVIDERS = [
@@ -89,6 +90,7 @@ export function Landing(props: LandingProps) {
       <SanctionMascot />
       <PriceComparison />
       <Demo />
+      <ShopTeaser />
       <Faq />
       <FinalCta primaryHref={primaryHref} primaryLabel={primaryLabel} />
       <LandingFooter />

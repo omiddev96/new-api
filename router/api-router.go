@@ -36,6 +36,20 @@ func SetApiRouter(router *gin.Engine) {
 		//apiRouter.GET("/midjourney", controller.GetMidjourney)
 		apiRouter.GET("/home_page_content", controller.GetHomePageContent)
 		apiRouter.GET("/pricing", middleware.HeaderNavModuleAuth("pricing"), controller.GetPricing)
+		apiRouter.GET("/account-shop/status", controller.GetAccountShopStatus)
+		apiRouter.GET("/account-shop/products", controller.GetAccountShopProducts)
+		apiRouter.POST("/account-shop/orders", middleware.UserAuth(), controller.CreateAccountShopOrder)
+		apiRouter.GET("/account-shop/orders", middleware.UserAuth(), controller.ListMyAccountShopOrders)
+		apiRouter.GET("/account-shop/orders/:id", middleware.UserAuth(), controller.GetMyAccountShopOrder)
+		accountShopAdmin := apiRouter.Group("/account-shop/admin")
+		accountShopAdmin.Use(middleware.AdminAuth())
+		{
+			accountShopAdmin.GET("/products", controller.AdminListAccountShopProducts)
+			accountShopAdmin.PUT("/products/:id", controller.AdminUpdateAccountShopProduct)
+			accountShopAdmin.GET("/balance", controller.AdminAccountShopBalance)
+			accountShopAdmin.GET("/orders", controller.AdminListAccountShopOrders)
+			accountShopAdmin.POST("/orders/:id/refund", controller.AdminRefundAccountShopOrder)
+		}
 		perfMetricsRoute := apiRouter.Group("/perf-metrics")
 		perfMetricsRoute.Use(middleware.HeaderNavModulePublicOrUserAuth("pricing"))
 		{
