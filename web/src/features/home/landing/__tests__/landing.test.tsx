@@ -62,8 +62,9 @@ test('shows the JetCloud headline and hides partner and open-source claims', asy
     })
   ).toBeInTheDocument()
   expect(
-    screen.queryByRole('heading', { name: 'Pay less per million tokens' })
-  ).not.toBeInTheDocument()
+    screen.getByRole('heading', { name: 'Pay less per million tokens' })
+  ).toBeInTheDocument()
+  expect(screen.getAllByText('10% less').length).toBeGreaterThan(0)
 })
 
 test('swaps only the model name in the demo snippet', async () => {

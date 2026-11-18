@@ -25,31 +25,38 @@ import {
 } from '../price-comparison'
 
 describe('price comparison', () => {
-  test('hides a row when the published official rate is lower than the fallback sell price', () => {
+  test('shows a 10% saving for the 90% fallback prices and hides a dearer model', () => {
     const rows = buildPriceComparisonRows()
-    expect(rows.map((row) => row.model)).not.toContain('gpt-6-astra')
-    expect(rows).toEqual([])
+    expect(rows.map((row) => row.model)).not.toContain('gpt-5.6-sol')
+    expect(rows.find((row) => row.model === 'gpt-6.2-astra')).toMatchObject({
+      jetInput: 7.2,
+      jetOutput: 36,
+      savingsPercent: 10,
+    })
+    expect(rows.find((row) => row.model === 'gpt-6-astra')?.savingsPercent).toBe(
+      10
+    )
   })
 
   test('shows a live ratio only when both token prices are below the official rate', () => {
     const cheaper = buildPriceComparisonRows([
       { model: 'gpt-6.1-terra', modelRatio: 0.2, completionRatio: 4 },
     ])
-    expect(cheaper).toEqual([
-      {
-        model: 'gpt-6.1-terra',
-        officialInput: 1,
-        officialOutput: 5,
-        jetInput: 0.4,
-        jetOutput: 1.6,
-        savingsPercent: 60,
-      },
-    ])
+    expect(cheaper.find((row) => row.model === 'gpt-6.1-terra')).toEqual({
+      model: 'gpt-6.1-terra',
+      officialInput: 1,
+      officialOutput: 5,
+      jetInput: 0.4,
+      jetOutput: 1.6,
+      savingsPercent: 60,
+    })
 
     const outputStillHigher = buildPriceComparisonRows([
       { model: 'gpt-6.1-terra', modelRatio: 0.2, completionRatio: 20 },
     ])
-    expect(outputStillHigher).toEqual([])
+    expect(outputStillHigher.map((row) => row.model)).not.toContain(
+      'gpt-6.1-terra'
+    )
   })
 
   test('ignores per-request live rows and keeps the fallback filter', () => {
@@ -61,7 +68,11 @@ describe('price comparison', () => {
         quotaType: 1,
       },
     ])
-    expect(rows).toEqual([])
+    expect(rows.find((row) => row.model === 'gpt-6.1-terra')).toMatchObject({
+      jetInput: 0.9,
+      jetOutput: 4.5,
+      savingsPercent: 10,
+    })
   })
 
   test('derives dollars per million from model ratio', () => {

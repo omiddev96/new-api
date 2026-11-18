@@ -38,14 +38,14 @@ export const OFFICIAL_OPENAI_STANDARD_USD_PER_MILLION = [
 
 /** Fallback sell prices, USD per 1M tokens, used when /api/pricing has no row. */
 export const FALLBACK_SELL_USD_PER_MILLION = [
-  { model: 'gpt-6-astra', input: 28, output: 140 },
-  { model: 'gpt-6.2-astra', input: 22.4, output: 112 },
-  { model: 'gpt-5.6-sol', input: 14, output: 84 },
-  { model: 'gpt-5.6-terra', input: 5.6, output: 33.6 },
-  { model: 'gpt-6.2-sol', input: 5.6, output: 28 },
-  { model: 'gpt-6.1-sol', input: 5.6, output: 28 },
-  { model: 'gpt-6-sol', input: 5.6, output: 28 },
-  { model: 'gpt-6.1-terra', input: 2.8, output: 14 },
+  { model: 'gpt-6-astra', input: 9, output: 45 },
+  { model: 'gpt-6.2-astra', input: 7.2, output: 36 },
+  { model: 'gpt-5.6-sol', input: 4.025, output: 24.15 },
+  { model: 'gpt-5.6-terra', input: 1.8, output: 10.8 },
+  { model: 'gpt-6.2-sol', input: 1.8, output: 9 },
+  { model: 'gpt-6.1-sol', input: 1.8, output: 9 },
+  { model: 'gpt-6-sol', input: 1.8, output: 9 },
+  { model: 'gpt-6.1-terra', input: 0.9, output: 4.5 },
 ] as const
 
 export type LiveModelRatio = {
@@ -104,7 +104,7 @@ export function buildPriceComparisonRows(
       officialOutput: official.output,
       jetInput,
       jetOutput,
-      savingsPercent: Math.floor(Math.min(inputSave, outputSave) * 100),
+      savingsPercent: Math.round(Math.min(inputSave, outputSave) * 100),
     })
   }
 
