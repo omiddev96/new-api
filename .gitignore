@@ -25,7 +25,29 @@ tiktoken_cache
 .cache
 .plans
 .claude
-.cursor
+# Local Cursor state stays untracked. The ECC install under .cursor/ is tracked.
+.cursor/*
+!.cursor/agents/
+!.cursor/agents/**
+!.cursor/commands/
+!.cursor/commands/**
+!.cursor/hooks/
+!.cursor/hooks/**
+!.cursor/hooks.json
+!.cursor/mcp.json
+!.cursor/mcp-configs/
+!.cursor/mcp-configs/**
+!.cursor/rules/
+!.cursor/rules/**
+!.cursor/skills/
+!.cursor/skills/**
+!.cursor/scripts/
+!.cursor/scripts/**
+!.cursor/ecc-agent-data.json
+!.cursor/ecc-install-state.json
+!.cursor/the-security-guide.md
+!.cursor/.agents/
+!.cursor/.agents/**
 
 electron/node_modules
 electron/dist
